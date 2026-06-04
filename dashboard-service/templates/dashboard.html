@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Dashboard</title>
+
+</head>
+
+<body>
+
+<h1>
+
+Welcome {{ user.username }}
+
+</h1>
+
+<a href="/logout">
+
+Logout
+
+</a>
+
+<hr>
+
+<h2>
+
+Your Servers
+
+</h2>
+
+<ul>
+
+{% for guild in guilds %}
+
+<li>
+
+{{ guild.name }}
+
+(ID: {{ guild.id }})
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+</body>
+
+</html>
