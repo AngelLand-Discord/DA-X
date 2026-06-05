@@ -57,6 +57,8 @@ app = Flask(
 
 app.secret_key = SECRET_KEY
 
+initialize_dashboard_tables()
+
 # =========================
 # DATABASE
 # =========================
