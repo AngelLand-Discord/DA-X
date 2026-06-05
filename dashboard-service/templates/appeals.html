@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Appeals</title>
+</head>
+
+<body>
+
+<h1>Appeals</h1>
+
+<a href="/guild/{{ guild_id }}">
+Back
+</a>
+
+<hr>
+
+<h2>Submit Appeal</h2>
+
+<form method="POST">
+
+<textarea
+name="appeal"
+rows="10"
+cols="60"
+required
+></textarea>
+
+<br><br>
+
+<button type="submit">
+Submit Appeal
+</button>
+
+</form>
+
+<hr>
+
+<h2>Existing Appeals</h2>
+
+{% for appeal in appeals %}
+
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
+
+<b>{{ appeal.username }}</b>
+
+<br><br>
+
+{{ appeal.appeal }}
+
+<br><br>
+
+Status:
+<b>{{ appeal.status }}</b>
+
+</div>
+
+{% endfor %}
+
+</body>
+
+</html>
