@@ -1,5 +1,9 @@
 import os
+import sqlite3
+
 from functools import wraps
+from pathlib import Path
+from datetime import datetime
 
 import requests
 
@@ -11,9 +15,19 @@ from flask import (
     url_for,
     render_template
 )
-from pathlib import Path
+
+# =========================
+# PATHS
+# =========================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASE_PATH = (
+    BASE_DIR.parent /
+    "bot-service" /
+    "bot.db"
+)
+
 # =========================
 # CONFIG
 # =========================
@@ -42,6 +56,20 @@ app = Flask(
 )
 
 app.secret_key = SECRET_KEY
+
+# =========================
+# DATABASE
+# =========================
+
+def get_db():
+
+    db = sqlite3.connect(
+        DATABASE_PATH
+    )
+
+    db.row_factory = sqlite3.Row
+
+    return db
 
 # =========================
 # HELPERS
@@ -88,7 +116,6 @@ def get_user_guilds(token):
 
     return r.json()
 
-
 # =========================
 # ROUTES
 # =========================
@@ -99,7 +126,6 @@ def index():
     return render_template(
         "index.html"
     )
-
 
 @app.route("/login")
 def login():
@@ -115,7 +141,6 @@ def login():
         f"&redirect_uri={REDIRECT_URI}"
         f"&scope={scope}"
     )
-
 
 @app.route("/callback")
 def callback():
@@ -192,7 +217,6 @@ def callback():
         )
     )
 
-
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -207,15 +231,13 @@ def dashboard():
         guilds=guilds
     )
 
-
 @app.route("/logout")
 def logout():
 
     session.clear()
 
-    return redirect(
-        "/"
-    )
+    return redirect("/")
+
 @app.route("/guild/<guild_id>")
 @login_required
 def guild_dashboard(guild_id):
@@ -231,7 +253,6 @@ def guild_dashboard(guild_id):
         if guild["id"] == guild_id:
 
             selected = guild
-
             break
 
     if not selected:
@@ -245,6 +266,71 @@ def guild_dashboard(guild_id):
         "guild.html",
         guild_name=selected["name"],
         guild_id=guild_id
+    )
+
+# =========================
+# SUGGESTIONS
+# =========================
+
+@app.route(
+    "/guild/<guild_id>/suggestions",
+    methods=["GET", "POST"]
+)
+@login_required
+def suggestions(guild_id):
+
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == "POST":
+
+        suggestion = request.form.get(
+            "suggestion"
+        )
+
+        if suggestion:
+
+            cur.execute(
+                """
+                INSERT INTO suggestions
+                (
+                    guild_id,
+                    user_id,
+                    username,
+                    suggestion,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    guild_id,
+                    session["user"]["id"],
+                    session["user"]["username"],
+                    suggestion,
+                    datetime.utcnow().isoformat()
+                )
+            )
+
+            db.commit()
+
+    cur.execute(
+        """
+        SELECT *
+        FROM suggestions
+        WHERE guild_id=?
+        ORDER BY id DESC
+        """,
+        (guild_id,)
+    )
+
+    suggestions = cur.fetchall()
+
+    db.close()
+
+    return render_template(
+        "suggestions.html",
+        guild_id=guild_id,
+        suggestions=suggestions
     )
 
 # =========================
