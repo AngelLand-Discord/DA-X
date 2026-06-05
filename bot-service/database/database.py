@@ -58,6 +58,36 @@ def initialize_database():
         refresh_token TEXT,
         expires_at TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS suggestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        suggestion TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS appeals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        appeal TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS applications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        application TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        created_at TEXT NOT NULL
+    );
     """)
 
 
@@ -206,6 +236,147 @@ def get_invites(guild_id: int):
         FROM invites
         WHERE guild_id=?
         ORDER BY count DESC
+        """,
+        (guild_id,)
+    )
+
+    return CUR.fetchall()
+
+
+# =========================
+# SUGGESTIONS
+# =========================
+
+def create_suggestion(
+    guild_id,
+    user_id,
+    username,
+    suggestion,
+    created_at
+):
+    CUR.execute(
+        """
+        INSERT INTO suggestions
+        (
+            guild_id,
+            user_id,
+            username,
+            suggestion,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            guild_id,
+            user_id,
+            username,
+            suggestion,
+            created_at
+        )
+    )
+
+
+def get_suggestions(guild_id):
+    CUR.execute(
+        """
+        SELECT *
+        FROM suggestions
+        WHERE guild_id=?
+        ORDER BY id DESC
+        """,
+        (guild_id,)
+    )
+
+    return CUR.fetchall()
+
+
+# =========================
+# APPEALS
+# =========================
+
+def create_appeal(
+    guild_id,
+    user_id,
+    username,
+    appeal,
+    created_at
+):
+    CUR.execute(
+        """
+        INSERT INTO appeals
+        (
+            guild_id,
+            user_id,
+            username,
+            appeal,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            guild_id,
+            user_id,
+            username,
+            appeal,
+            created_at
+        )
+    )
+
+
+def get_appeals(guild_id):
+    CUR.execute(
+        """
+        SELECT *
+        FROM appeals
+        WHERE guild_id=?
+        ORDER BY id DESC
+        """,
+        (guild_id,)
+    )
+
+    return CUR.fetchall()
+
+
+# =========================
+# APPLICATIONS
+# =========================
+
+def create_application(
+    guild_id,
+    user_id,
+    username,
+    application,
+    created_at
+):
+    CUR.execute(
+        """
+        INSERT INTO applications
+        (
+            guild_id,
+            user_id,
+            username,
+            application,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            guild_id,
+            user_id,
+            username,
+            application,
+            created_at
+        )
+    )
+
+
+def get_applications(guild_id):
+    CUR.execute(
+        """
+        SELECT *
+        FROM applications
+        WHERE guild_id=?
+        ORDER BY id DESC
         """,
         (guild_id,)
     )
