@@ -57,8 +57,6 @@ app = Flask(
 
 app.secret_key = SECRET_KEY
 
-initialize_dashboard_tables()
-
 # =========================
 # DATABASE
 # =========================
@@ -92,7 +90,8 @@ def initialize_dashboard_tables():
 
     db.commit()
     db.close()
-    
+
+initialize_dashboard_tables()
 # =========================
 # HELPERS
 # =========================
