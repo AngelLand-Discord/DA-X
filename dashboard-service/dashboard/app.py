@@ -381,7 +381,79 @@ def suggestions(guild_id):
         guild_id=guild_id,
         suggestions=suggestions
     )
+# =========================
+# APPEALS
+# =========================
 
+@app.route(
+    "/guild/<guild_id>/appeals",
+    methods=["GET", "POST"]
+)
+@login_required
+def appeals(guild_id):
+
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == "POST":
+
+        appeal = request.form.get(
+            "appeal"
+        )
+
+        if appeal:
+
+            cur.execute(
+                """
+                INSERT INTO appeals
+                (
+                    guild_id,
+                    user_id,
+                    username,
+                    appeal,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    guild_id,
+                    session["user"]["id"],
+                    session["user"]["username"],
+                    appeal,
+                    datetime.utcnow().isoformat()
+                )
+            )
+
+            db.commit()
+
+            db.close()
+
+            return redirect(
+                url_for(
+                    "appeals",
+                    guild_id=guild_id
+                )
+            )
+
+    cur.execute(
+        """
+        SELECT *
+        FROM appeals
+        WHERE guild_id=?
+        ORDER BY id DESC
+        """,
+        (guild_id,)
+    )
+
+    appeals_list = cur.fetchall()
+
+    db.close()
+
+    return render_template(
+        "appeals.html",
+        guild_id=guild_id,
+        appeals=appeals_list
+    )
 # =========================
 # START
 # =========================
