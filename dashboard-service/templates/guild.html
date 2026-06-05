@@ -2,41 +2,71 @@
 <html>
 
 <head>
-    <title>Guild Dashboard</title>
+    <title>{{ guild_name }}</title>
 </head>
 
 <body>
 
-<h1>{{ guild_name }}</h1>
+<h1>
+
+{{ guild_name }}
+
+</h1>
 
 <hr>
 
-<h2>Moderation</h2>
+<h2>
+
+Member Features
+
+</h2>
 
 <ul>
-    <li>Ban User</li>
-    <li>Mute User</li>
-    <li>Temp Ban User</li>
-    <li>Restore Roles</li>
+
+<li>
+<a href="/guild/{{ guild_id }}/suggestions">
+Suggestions
+</a>
+</li>
+
+<li>
+Appeals
+</li>
+
+<li>
+Applications
+</li>
+
 </ul>
 
 <hr>
 
-<h2>Announcements</h2>
+<h2>
+
+Staff Features
+
+</h2>
 
 <ul>
-    <li>Send Announcement</li>
-    <li>Broadcast</li>
-</ul>
 
-<hr>
+<li>
+Moderation
+</li>
 
-<h2>Settings</h2>
+<li>
+Announcements
+</li>
 
-<ul>
-    <li>Log Channel</li>
-    <li>Announcement Channel</li>
+<li>
+Logs
+</li>
+
+<li>
+Settings
+</li>
+
 </ul>
 
 </body>
+
 </html>
