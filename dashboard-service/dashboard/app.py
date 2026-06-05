@@ -216,7 +216,36 @@ def logout():
     return redirect(
         "/"
     )
+@app.route("/guild/<guild_id>")
+@login_required
+def guild_dashboard(guild_id):
 
+    guilds = get_user_guilds(
+        session["token"]
+    )
+
+    selected = None
+
+    for guild in guilds:
+
+        if guild["id"] == guild_id:
+
+            selected = guild
+
+            break
+
+    if not selected:
+
+        return (
+            "Guild not found",
+            404
+        )
+
+    return render_template(
+        "guild.html",
+        guild_name=selected["name"],
+        guild_id=guild_id
+    )
 
 # =========================
 # START
