@@ -71,6 +71,26 @@ def get_db():
 
     return db
 
+def initialize_dashboard_tables():
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS suggestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        suggestion TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        created_at TEXT NOT NULL
+    )
+    """)
+
+    db.commit()
+    db.close()
+    
 # =========================
 # HELPERS
 # =========================
