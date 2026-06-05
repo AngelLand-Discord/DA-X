@@ -27,17 +27,17 @@ Logout
 
 Your Servers
 
-</h2>
-
 <ul>
 
 {% for guild in guilds %}
 
 <li>
 
+<a href="/guild/{{ guild.id }}">
+
 {{ guild.name }}
 
-(ID: {{ guild.id }})
+</a>
 
 </li>
 
