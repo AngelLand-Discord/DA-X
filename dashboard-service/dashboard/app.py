@@ -155,6 +155,11 @@ def get_user_guilds(token):
 # ROUTES
 # =========================
 
+@app.route("/test123")
+def test123():
+    return "APPEALS BUILD TEST"
+
+
 @app.route("/")
 def index():
 
