@@ -71,6 +71,7 @@ def get_db():
 
     return db
 
+
 def initialize_dashboard_tables():
 
     db = get_db()
@@ -91,7 +92,9 @@ def initialize_dashboard_tables():
     db.commit()
     db.close()
 
+
 initialize_dashboard_tables()
+
 # =========================
 # HELPERS
 # =========================
@@ -148,6 +151,7 @@ def index():
         "index.html"
     )
 
+
 @app.route("/login")
 def login():
 
@@ -162,6 +166,7 @@ def login():
         f"&redirect_uri={REDIRECT_URI}"
         f"&scope={scope}"
     )
+
 
 @app.route("/callback")
 def callback():
@@ -238,6 +243,7 @@ def callback():
         )
     )
 
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -252,12 +258,14 @@ def dashboard():
         guilds=guilds
     )
 
+
 @app.route("/logout")
 def logout():
 
     session.clear()
 
     return redirect("/")
+
 
 @app.route("/guild/<guild_id>")
 @login_required
@@ -333,6 +341,15 @@ def suggestions(guild_id):
             )
 
             db.commit()
+
+            db.close()
+
+            return redirect(
+                url_for(
+                    "suggestions",
+                    guild_id=guild_id
+                )
+            )
 
     cur.execute(
         """
