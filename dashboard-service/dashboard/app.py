@@ -89,9 +89,20 @@ def initialize_dashboard_tables():
     )
     """)
 
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS appeals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        appeal TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        created_at TEXT NOT NULL
+    )
+    """)
+
     db.commit()
     db.close()
-
 
 initialize_dashboard_tables()
 
