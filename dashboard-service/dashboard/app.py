@@ -11,7 +11,9 @@ from flask import (
     url_for,
     render_template
 )
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================
 # CONFIG
 # =========================
@@ -34,7 +36,10 @@ DISCORD_API = "https://discord.com/api"
 # APP
 # =========================
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates")
+)
 
 app.secret_key = SECRET_KEY
 
