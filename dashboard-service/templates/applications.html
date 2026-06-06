@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Applications</title>
+</head>
+
+<body>
+
+<h1>Applications</h1>
+
+<a href="/guild/{{ guild_id }}">
+Back
+</a>
+
+<hr>
+
+<h2>Submit Application</h2>
+
+<form method="POST">
+
+<label>Name</label>
+<br>
+<input
+type="text"
+name="name"
+required
+>
+
+<br><br>
+
+<label>Age</label>
+<br>
+<input
+type="number"
+name="age"
+required
+>
+
+<br><br>
+
+<label>Timezone</label>
+<br>
+<input
+type="text"
+name="timezone"
+required
+>
+
+<br><br>
+
+<label>Experience</label>
+<br>
+
+<textarea
+name="experience"
+rows="6"
+cols="60"
+required
+></textarea>
+
+<br><br>
+
+<label>
+Why should we pick you?
+</label>
+
+<br>
+
+<textarea
+name="reason"
+rows="10"
+cols="60"
+required
+></textarea>
+
+<br><br>
+
+<button type="submit">
+Submit Application
+</button>
+
+</form>
+
+<hr>
+
+<h2>Applications</h2>
+
+{% for application in applications %}
+
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
+
+<b>
+{{ application.username }}
+</b>
+
+<br><br>
+
+<b>Name:</b>
+{{ application.name }}
+
+<br>
+
+<b>Age:</b>
+{{ application.age }}
+
+<br>
+
+<b>Timezone:</b>
+{{ application.timezone }}
+
+<br><br>
+
+<b>Experience:</b>
+
+<br>
+
+{{ application.experience }}
+
+<br><br>
+
+<b>Reason:</b>
+
+<br>
+
+{{ application.reason }}
+
+<br><br>
+
+Status:
+<b>
+{{ application.status }}
+</b>
+
+</div>
+
+{% endfor %}
+
+</body>
+
+</html>
