@@ -2,49 +2,105 @@
 <html>
 
 <head>
-    <title>Staff Portal</title>
+
+    <title>
+
+        {{ guild_name }}
+
+    </title>
+
 </head>
 
 <body>
 
-<h1>{{ guild_name }}</h1>
+<h1>
+
+Staff Portal
+
+</h1>
+
+<h2>
+
+{{ guild_name }}
+
+</h2>
 
 <hr>
-
-<h2>Staff Portal</h2>
 
 <ul>
 
 <li>
-<a href="/guild/{{ guild_id }}/suggestions">
-Suggestions
-</a>
-</li>
 
-<li>
-<a href="/guild/{{ guild_id }}/appeals">
-Appeals
-</a>
-</li>
+<a href="/guild/{{ guild_id }}/applications">
 
-<li>
 Applications
+
+</a>
+
 </li>
 
 <li>
+
+<a href="/guild/{{ guild_id }}/appeals">
+
+Appeals
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/guild/{{ guild_id }}/suggestions">
+
+Suggestions
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/guild/{{ guild_id }}/moderation">
+
 Moderation
+
+</a>
+
 </li>
 
 <li>
+
+<a href="/guild/{{ guild_id }}/logs">
+
 Logs
+
+</a>
+
 </li>
 
 </ul>
 
 <hr>
 
+<div>
+
+Role:
+
+<b>
+
+STAFF
+
+</b>
+
+</div>
+
+<br>
+
 <a href="/dashboard">
-Back to Dashboard
+
+Back To Dashboard
+
 </a>
 
 </body>
