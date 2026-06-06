@@ -2,63 +2,151 @@
 <html>
 
 <head>
-    <title>Owner Portal</title>
+
+    <title>
+
+        {{ guild_name }}
+
+    </title>
+
 </head>
 
 <body>
 
-<h1>{{ guild_name }}</h1>
+<h1>
+
+Owner Portal
+
+</h1>
+
+<h2>
+
+{{ guild_name }}
+
+</h2>
 
 <hr>
 
-<h2>Owner Portal</h2>
+<h3>
+
+Management
+
+</h3>
 
 <ul>
 
 <li>
+
 <a href="/guild/{{ guild_id }}/staff-access">
-Manage Staff Access
+
+Staff Access
+
 </a>
+
 </li>
 
 <li>
-<a href="/guild/{{ guild_id }}/suggestions">
-Suggestions
-</a>
-</li>
 
-<li>
-<a href="/guild/{{ guild_id }}/appeals">
-Appeals
-</a>
-</li>
+<a href="/guild/{{ guild_id }}/applications">
 
-<li>
 Applications
+
+</a>
+
 </li>
 
 <li>
-Moderation
+
+<a href="/guild/{{ guild_id }}/appeals">
+
+Appeals
+
+</a>
+
 </li>
 
 <li>
+
+<a href="/guild/{{ guild_id }}/suggestions">
+
+Suggestions
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/guild/{{ guild_id }}/settings">
+
 Settings
+
+</a>
+
 </li>
 
 <li>
+
+<a href="/guild/{{ guild_id }}/logs">
+
 Logs
+
+</a>
+
 </li>
 
 <li>
-Announcements
+
+<a href="/guild/{{ guild_id }}/moderation">
+
+Moderation
+
+</a>
+
 </li>
 
 </ul>
 
 <hr>
 
+<h3>
+
+Quick Stats
+
+</h3>
+
+<div>
+
+Server ID:
+
+<b>
+
+{{ guild_id }}
+
+</b>
+
+</div>
+
+<br>
+
+<div>
+
+Role:
+
+<b>
+
+OWNER
+
+</b>
+
+</div>
+
+<hr>
+
 <a href="/dashboard">
-Back to Dashboard
+
+Back To Dashboard
+
 </a>
 
 </body>
