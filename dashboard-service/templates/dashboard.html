@@ -3,7 +3,11 @@
 
 <head>
 
-    <title>Dashboard</title>
+    <title>
+
+        Dashboard
+
+    </title>
 
 </head>
 
@@ -11,15 +15,11 @@
 
 <h1>
 
-Welcome {{ user.username }}
+Welcome
+
+{{ user.username }}
 
 </h1>
-
-<a href="/logout">
-
-Logout
-
-</a>
 
 <hr>
 
@@ -27,23 +27,53 @@ Logout
 
 Your Servers
 
-<ul>
+</h2>
 
 {% for guild in guilds %}
 
-<li>
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
 
-<a href="/guild/{{ guild.id }}">
+<h3>
 
 {{ guild.name }}
 
+</h3>
+
+<div>
+
+ID:
+
+{{ guild.id }}
+
+</div>
+
+<br>
+
+<a href="/guild/{{ guild.id }}">
+
+<button>
+
+Open Server
+
+</button>
+
 </a>
 
-</li>
+</div>
 
 {% endfor %}
 
-</ul>
+<hr>
+
+<a href="/logout">
+
+Logout
+
+</a>
 
 </body>
 
