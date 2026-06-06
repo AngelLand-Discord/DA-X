@@ -2,89 +2,95 @@
 <html>
 
 <head>
-    <title>Applications</title>
+
+<title>
+
+Applications
+
+</title>
+
 </head>
 
 <body>
 
-<h1>Applications</h1>
+<h1>
+
+Applications
+
+</h1>
 
 <a href="/guild/{{ guild_id }}">
+
 Back
+
 </a>
 
 <hr>
 
-<h2>Submit Application</h2>
+<h2>
+
+Submit Application
+
+</h2>
 
 <form method="POST">
 
-<label>Name</label>
-<br>
 <input
 type="text"
 name="name"
+placeholder="Name"
 required
 >
 
 <br><br>
 
-<label>Age</label>
-<br>
 <input
 type="number"
 name="age"
+placeholder="Age"
 required
 >
 
 <br><br>
 
-<label>Timezone</label>
-<br>
 <input
 type="text"
 name="timezone"
+placeholder="Timezone"
 required
 >
 
 <br><br>
 
-<label>Experience</label>
-<br>
-
 <textarea
 name="experience"
-rows="6"
+rows="5"
 cols="60"
+placeholder="Experience"
 required
 ></textarea>
 
 <br><br>
 
-<label>
-Why should we pick you?
-</label>
-
-<br>
-
 <textarea
 name="reason"
-rows="10"
+rows="8"
 cols="60"
+placeholder="Why should we pick you?"
 required
 ></textarea>
 
 <br><br>
 
 <button type="submit">
-Submit Application
+
+Submit
+
 </button>
 
 </form>
 
 <hr>
-
-<h2>Applications</h2>
 
 {% for application in applications %}
 
@@ -95,27 +101,32 @@ margin:10px;
 ">
 
 <b>
+
 {{ application.username }}
+
 </b>
 
 <br><br>
 
-<b>Name:</b>
+Name:
+
 {{ application.name }}
 
 <br>
 
-<b>Age:</b>
+Age:
+
 {{ application.age }}
 
 <br>
 
-<b>Timezone:</b>
+Timezone:
+
 {{ application.timezone }}
 
 <br><br>
 
-<b>Experience:</b>
+Experience:
 
 <br>
 
@@ -123,7 +134,7 @@ margin:10px;
 
 <br><br>
 
-<b>Reason:</b>
+Reason:
 
 <br>
 
@@ -132,9 +143,36 @@ margin:10px;
 <br><br>
 
 Status:
+
 <b>
+
 {{ application.status }}
+
 </b>
+
+<br><br>
+
+<a href="/application/{{ application.id }}/Accepted">
+
+Accept
+
+</a>
+
+|
+
+<a href="/application/{{ application.id }}/Rejected">
+
+Reject
+
+</a>
+
+|
+
+<a href="/application/{{ application.id }}/Pending">
+
+Pending
+
+</a>
 
 </div>
 
