@@ -81,8 +81,9 @@ def initialize_database():
         guild_id TEXT NOT NULL,
         user_id TEXT NOT NULL,
         username TEXT NOT NULL,
+        appeal_type TEXT NOT NULL DEFAULT 'Ban Appeal',
         appeal TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'Pending',
+        status TEXT DEFAULT 'Pending',
         created_at TEXT NOT NULL
     );
 
@@ -478,18 +479,70 @@ def suggestions(guild_id, level, guild):
 @require_feature("appeals")
 def appeals(guild_id, level, guild):
     db = get_db()
-    if request.method == "POST":
-        appeal = clean_text(request.form.get("appeal"), 4000)
-        if appeal:
-            db.execute(
-                "INSERT INTO appeals (guild_id, user_id, username, appeal, created_at) VALUES (?, ?, ?, ?, ?)",
-                (guild_id, current_user_id(), session["user"]["username"], appeal, utc_now()),
-            )
-            db.commit()
-    rows = db.execute("SELECT * FROM appeals WHERE guild_id=? ORDER BY id DESC", (guild_id,)).fetchall()
-    db.close()
-    return render_template("appeals.html", guild_id=guild_id, guild_name=guild["name"], appeals=rows, level=level)
 
+    if request.method == "POST":
+
+        appeal_type = clean_text(
+            request.form.get(
+                "appeal_type",
+                "Ban Appeal"
+            ),
+            100
+        )
+
+        appeal = clean_text(
+            request.form.get(
+                "appeal"
+            ),
+            4000
+        )
+
+        if appeal:
+
+            db.execute(
+                """
+                INSERT INTO appeals
+                (
+                    guild_id,
+                    user_id,
+                    username,
+                    appeal_type,
+                    appeal,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    guild_id,
+                    current_user_id(),
+                    session["user"]["username"],
+                    appeal_type,
+                    appeal,
+                    utc_now()
+                )
+            )
+
+            db.commit()
+
+    rows = db.execute(
+        """
+        SELECT *
+        FROM appeals
+        WHERE guild_id=?
+        ORDER BY id DESC
+        """,
+        (guild_id,)
+    ).fetchall()
+
+    db.close()
+
+    return render_template(
+        "appeals.html",
+        guild_id=guild_id,
+        guild_name=guild["name"],
+        appeals=rows,
+        level=level
+    )
 
 @app.route("/guild/<guild_id>/applications", methods=["GET", "POST"])
 @require_feature("applications")
