@@ -1,80 +1,96 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+Dashboard | DA-X
+{% endblock %}
 
-    <title>
+{% block content %}
 
-        Dashboard
+<div class="topbar">
+    <div>
+        <div class="page-title">
+            Welcome, {{ user.username }}
+        </div>
+        <p style="color:#9ca3af;margin-top:8px;">
+            Manage all servers connected to DA-X
+        </p>
+    </div>
+</div>
 
-    </title>
+<div class="grid" style="margin-bottom:30px;">
 
-</head>
+    <div class="stat-card">
+        <div>Servers</div>
+        <div class="stat-number">
+            {{ guilds|length }}
+        </div>
+    </div>
 
-<body>
+    <div class="stat-card">
+        <div>Dashboard Status</div>
+        <div class="stat-number">
+            Online
+        </div>
+    </div>
 
-<h1>
-
-Welcome
-
-{{ user.username }}
-
-</h1>
-
-<hr>
-
-<h2>
-
-Your Servers
-
-</h2>
-
-{% for guild in guilds %}
-
-<div style="
-border:1px solid gray;
-padding:10px;
-margin:10px;
-">
-
-<h3>
-
-{{ guild.name }}
-
-</h3>
-
-<div>
-
-ID:
-
-{{ guild.id }}
+    <div class="stat-card">
+        <div>Bot Status</div>
+        <div class="stat-number">
+            Active
+        </div>
+    </div>
 
 </div>
 
-<br>
+<div class="card">
 
-<a href="/guild/{{ guild.id }}">
+    <div class="section-title">
+        Your Servers
+    </div>
 
-<button>
+    <div class="grid">
 
-Open Server
+        {% for guild in guilds %}
 
-</button>
+        <div class="card">
 
-</a>
+            <h3 style="margin-bottom:10px;">
+                {{ guild.name }}
+            </h3>
+
+            <p style="color:#9ca3af;margin-bottom:20px;">
+                Server ID: {{ guild.id }}
+            </p>
+
+            {% if guild.owner %}
+
+            <span class="badge badge-approved">
+                Owner
+            </span>
+
+            {% else %}
+
+            <span class="badge badge-pending">
+                Member
+            </span>
+
+            {% endif %}
+
+            <br><br>
+
+            <a
+                href="/guild/{{ guild.id }}"
+                class="btn"
+            >
+                Manage Server
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
 
 </div>
 
-{% endfor %}
-
-<hr>
-
-<a href="/logout">
-
-Logout
-
-</a>
-
-</body>
-
-</html>
+{% endblock %}
