@@ -377,95 +377,95 @@ def guild_dashboard(guild_id):
 @require_feature("staff_access")
 def staff_access(guild_id, level, guild):
 
-db = get_db()
+    db = get_db()
 
-if request.method == "POST":
+    if request.method == "POST":
 
-    action = request.form.get("action", "add")
+        action = request.form.get("action", "add")
 
-    user_id = clean_text(
-        request.form.get("user_id"),
-        25
-    )
+        user_id = clean_text(
+            request.form.get("user_id"),
+            25
+        )
 
-    if not valid_discord_id(user_id):
+        if not valid_discord_id(user_id):
 
+            db.close()
+
+            return render_template(
+                "error.html",
+                title="Invalid user ID",
+                message="Enter a valid Discord user ID."
+            ), 400
+
+        if action == "remove":
+
+            db.execute(
+                """
+                DELETE FROM guild_permissions
+                WHERE guild_id=? AND user_id=?
+                """,
+                (
+                    guild_id,
+                    user_id
+                )
+            )
+
+        else:
+    
+            db.execute(
+                """
+                INSERT OR REPLACE INTO guild_permissions
+                (
+                    guild_id,
+                    user_id,
+                    role,
+                    added_by,
+                    created_at
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?, ?
+                )
+                """,
+                (
+                    guild_id,
+                    user_id,
+                    "staff",
+                    current_user_id(),
+                    utc_now()
+                )
+            )
+
+        db.commit()
+    
         db.close()
 
-        return render_template(
-            "error.html",
-            title="Invalid user ID",
-            message="Enter a valid Discord user ID."
-        ), 400
-
-    if action == "remove":
-
-        db.execute(
-            """
-            DELETE FROM guild_permissions
-            WHERE guild_id=? AND user_id=?
-            """,
-            (
-                guild_id,
-                user_id
+        return redirect(
+            url_for(
+                "staff_access",
+                guild_id=guild_id
             )
         )
-
-    else:
-
-        db.execute(
-            """
-            INSERT OR REPLACE INTO guild_permissions
-            (
-                guild_id,
-                user_id,
-                role,
-                added_by,
-                created_at
-            )
-            VALUES
-            (
-                ?, ?, ?, ?, ?
-            )
-            """,
-            (
-                guild_id,
-                user_id,
-                "staff",
-                current_user_id(),
-                utc_now()
-            )
-        )
-
-    db.commit()
+    
+    staff_users = db.execute(
+        """
+        SELECT *
+        FROM guild_permissions
+        WHERE guild_id=?
+        ORDER BY user_id
+        """,
+        (guild_id,)
+    ).fetchall()
 
     db.close()
 
-    return redirect(
-        url_for(
-            "staff_access",
-            guild_id=guild_id
-        )
+    return render_template(
+        "staff_access.html",
+        guild_id=guild_id,
+        guild_name=guild["name"],
+        staff_users=staff_users
     )
-
-staff_users = db.execute(
-    """
-    SELECT *
-    FROM guild_permissions
-    WHERE guild_id=?
-    ORDER BY user_id
-    """,
-    (guild_id,)
-).fetchall()
-
-db.close()
-
-return render_template(
-    "staff_access.html",
-    guild_id=guild_id,
-    guild_name=guild["name"],
-    staff_users=staff_users
-)
 
 @app.route("/guild/<guild_id>/settings", methods=["GET", "POST"])
 @require_feature("settings")
