@@ -19,6 +19,8 @@ from dashboard.app import app
 
 print("STEP 4")
 
+print(sys.path)
+
 from bot import start_bot
 
 print("STEP 5")
