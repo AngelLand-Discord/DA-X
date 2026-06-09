@@ -1,89 +1,222 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+Suggestions | DA-X
+{% endblock %}
 
-    <title>Suggestions</title>
+{% block content %}
 
-</head>
+<div class="topbar">
 
-<body>
+```
+<div>
 
-<h1>
-Suggestions
-</h1>
+    <div class="page-title">
+        Suggestions
+    </div>
 
-<a href="/guild/{{ guild_id }}">
-Back
-</a>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Manage community suggestions
+    </p>
 
-<hr>
-
-<h2>
-Submit Suggestion
-</h2>
-
-<form method="POST">
-
-    <textarea
-        name="suggestion"
-        rows="10"
-        cols="60"
-        required
-    ></textarea>
-
-    <br><br>
-
-    <button type="submit">
-
-        Submit
-
-    </button>
-
-</form>
-
-<hr>
-
-<h2>
-Existing Suggestions
-</h2>
-
-{% for suggestion in suggestions %}
-
-<div
-style="
-border:1px solid gray;
-padding:10px;
-margin:10px;
-"
->
-
-<b>{{ suggestion.username }}</b>
-
-<br><br>
-
-{{ suggestion.suggestion }}
-
-<br><br>
-
-Status:
-<b>{{ suggestion.status }}</b>
-
-{% if level in ["OWNER", "STAFF"] %}
-<br><br>
-<a href="/suggestion/{{ suggestion.id }}/Approved">Approve</a>
-|
-<a href="/suggestion/{{ suggestion.id }}/Rejected">Reject</a>
-|
-<a href="/suggestion/{{ suggestion.id }}/Implemented">Implement</a>
-|
-<a href="/suggestion/{{ suggestion.id }}/Pending">Pending</a>
-{% endif %}
+</div>
+```
 
 </div>
 
-{% endfor %}
+<div class="card" style="margin-bottom:30px;">
 
-</body>
+```
+<div class="section-title">
+    Submit Suggestion
+</div>
 
-</html>
+<form method="POST">
+
+    <label>
+        Suggestion
+    </label>
+
+    <textarea
+        name="suggestion"
+        rows="8"
+        required
+        placeholder="Share your idea with the server..."
+    ></textarea>
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Submit Suggestion
+    </button>
+
+</form>
+```
+
+</div>
+
+<div class="card">
+
+```
+<div class="section-title">
+    Suggestions
+</div>
+
+{% if suggestions %}
+
+    {% for suggestion in suggestions %}
+
+    <div
+        style="
+        background:#202737;
+        padding:20px;
+        border-radius:14px;
+        margin-bottom:15px;
+        "
+    >
+
+        <div
+            style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:10px;
+            "
+        >
+
+            <div>
+
+                <h3>
+                    {{ suggestion.username }}
+                </h3>
+
+                <small style="color:#9ca3af;">
+                    User ID:
+                    {{ suggestion.user_id }}
+                </small>
+
+            </div>
+
+            <div>
+
+                {% if suggestion.status == "Pending" %}
+
+                <span class="badge badge-pending">
+                    Pending
+                </span>
+
+                {% elif suggestion.status == "Approved" %}
+
+                <span class="badge badge-approved">
+                    Approved
+                </span>
+
+                {% elif suggestion.status == "Implemented" %}
+
+                <span class="badge badge-approved">
+                    Implemented
+                </span>
+
+                {% elif suggestion.status == "Rejected" %}
+
+                <span class="badge badge-rejected">
+                    Rejected
+                </span>
+
+                {% else %}
+
+                <span class="badge">
+                    {{ suggestion.status }}
+                </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <hr
+            style="
+            border:none;
+            border-top:1px solid rgba(255,255,255,.08);
+            margin:15px 0;
+            "
+        >
+
+        <p
+            style="
+            line-height:1.7;
+            color:#d1d5db;
+            "
+        >
+            {{ suggestion.suggestion }}
+        </p>
+
+        {% if suggestion.status == "Pending" %}
+
+        <div
+            style="
+            margin-top:20px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            "
+        >
+
+            <a
+                href="/suggestion/{{ suggestion.id }}/Approved"
+                class="btn btn-green"
+            >
+                ✓ Approve
+            </a>
+
+            <a
+                href="/suggestion/{{ suggestion.id }}/Implemented"
+                class="btn"
+            >
+                🚀 Implemented
+            </a>
+
+            <a
+                href="/suggestion/{{ suggestion.id }}/Rejected"
+                class="btn btn-red"
+            >
+                ✕ Reject
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p style="color:#9ca3af;">
+        No suggestions found.
+    </p>
+
+{% endif %}
+```
+
+</div>
+
+<br>
+
+<a
+href="/guild/{{ guild_id }}"
+class="btn"
+
+>
+
+```
+← Back
+```
+
+</a>
+
+{% endblock %}
