@@ -8,7 +8,6 @@ Staff Access | DA-X
 
 <div class="topbar">
 
-```
 <div>
 
     <div class="page-title">
@@ -20,18 +19,22 @@ Staff Access | DA-X
     </p>
 
 </div>
-```
 
 </div>
 
 <div class="card" style="margin-bottom:30px;">
 
-```
 <div class="section-title">
     Add Staff Member
 </div>
 
 <form method="POST">
+
+    <input
+        type="hidden"
+        name="action"
+        value="add"
+    >
 
     <label>
         Discord User ID
@@ -52,74 +55,101 @@ Staff Access | DA-X
     </button>
 
 </form>
-```
 
 </div>
 
 <div class="card">
 
-```
 <div class="section-title">
     Staff Members
 </div>
 
 {% if staff_users %}
 
-    <table>
+<table>
 
-        <thead>
+    <thead>
 
-            <tr>
-                <th>User ID</th>
-                <th>Role</th>
-                <th>Added By</th>
-                <th>Created</th>
-            </tr>
+        <tr>
 
-        </thead>
+            <th>User ID</th>
+            <th>Role</th>
+            <th>Added By</th>
+            <th>Created</th>
+            <th>Actions</th>
 
-        <tbody>
+        </tr>
 
-            {% for user in staff_users %}
+    </thead>
 
-            <tr>
+    <tbody>
 
-                <td>
-                    {{ user.user_id }}
-                </td>
+        {% for user in staff_users %}
 
-                <td>
+        <tr>
 
-                    <span class="badge badge-approved">
-                        {{ user.role }}
-                    </span>
+            <td>
+                {{ user.user_id }}
+            </td>
 
-                </td>
+            <td>
 
-                <td>
-                    {{ user.added_by }}
-                </td>
+                <span class="badge badge-approved">
+                    {{ user.role }}
+                </span>
 
-                <td>
-                    {{ user.created_at }}
-                </td>
+            </td>
 
-            </tr>
+            <td>
+                {{ user.added_by }}
+            </td>
 
-            {% endfor %}
+            <td>
+                {{ user.created_at }}
+            </td>
 
-        </tbody>
+            <td>
 
-    </table>
+                <form method="POST">
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="remove"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="user_id"
+                        value="{{ user.user_id }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-red"
+                    >
+                        Remove
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
 
 {% else %}
 
-    <p style="color:#9ca3af;">
-        No staff members added yet.
-    </p>
+<p style="color:#9ca3af;">
+    No staff members added yet.
+</p>
 
 {% endif %}
-```
 
 </div>
 
@@ -131,9 +161,7 @@ class="btn"
 
 >
 
-```
 ← Back
-```
 
 </a>
 
