@@ -1,118 +1,111 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+{{ guild_name }} | Staff Panel
+{% endblock %}
 
-    <title>
+{% block content %}
 
-        {{ guild_name }}
+<div class="topbar">
 
-    </title>
-
-</head>
-
-<body>
-
-<h1>
-
-Staff Portal
-
-</h1>
-
-<h2>
-
-{{ guild_name }}
-
-</h2>
-
-<hr>
-
-<ul>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/applications">
-
-Applications
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/appeals">
-
-Appeals
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/suggestions">
-
-Suggestions
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/tickets">
-
-Tickets
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/moderation">
-
-Moderation
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/logs">
-
-Logs
-
-</a>
-
-</li>
-
-</ul>
-
-<hr>
-
+```
 <div>
 
-Role:
+    <div class="page-title">
+        {{ guild_name }}
+    </div>
 
-<b>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Staff Dashboard
+    </p>
 
-STAFF
+</div>
 
-</b>
+<span class="badge badge-pending">
+    STAFF
+</span>
+```
+
+</div>
+
+<div class="grid">
+
+```
+<div class="card">
+    <h3>📜 Logs</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        View moderation history and server actions.
+    </p>
+    <a href="/guild/{{ guild_id }}/logs" class="btn">
+        Open
+    </a>
+</div>
+
+<div class="card">
+    <h3>🔨 Moderation</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        Manage warnings and moderation actions.
+    </p>
+    <a href="/guild/{{ guild_id }}/moderation" class="btn">
+        Open
+    </a>
+</div>
+
+<div class="card">
+    <h3>💡 Suggestions</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        Review community suggestions.
+    </p>
+    <a href="/guild/{{ guild_id }}/suggestions" class="btn">
+        Open
+    </a>
+</div>
+
+<div class="card">
+    <h3>⚖ Appeals</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        Review user appeals.
+    </p>
+    <a href="/guild/{{ guild_id }}/appeals" class="btn">
+        Open
+    </a>
+</div>
+
+<div class="card">
+    <h3>📋 Applications</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        Review applications.
+    </p>
+    <a href="/guild/{{ guild_id }}/applications" class="btn">
+        Open
+    </a>
+</div>
+
+<div class="card">
+    <h3>🎫 Tickets</h3>
+    <p style="margin:15px 0;color:#9ca3af;">
+        Manage support tickets.
+    </p>
+    <a href="/guild/{{ guild_id }}/tickets" class="btn">
+        Open
+    </a>
+</div>
+```
 
 </div>
 
 <br>
 
-<a href="/dashboard">
+<a
+href="/dashboard"
+class="btn"
 
-Back To Dashboard
+>
+
+```
+← Back to Dashboard
+```
 
 </a>
 
-</body>
-
-</html>
+{% endblock %}
