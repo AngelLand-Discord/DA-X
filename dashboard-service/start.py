@@ -6,10 +6,11 @@ print("STEP 1")
 
 ROOT = Path(__file__).resolve().parent.parent
 
-print("STEP 2")
+BOT_DIR = ROOT / "bot-service"
 
-sys.path.append(
-    str(ROOT / "bot-service")
+sys.path.insert(
+    0,
+    str(BOT_DIR)
 )
 
 print("STEP 3")
