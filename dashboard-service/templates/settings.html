@@ -1,92 +1,137 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+Settings | DA-X
+{% endblock %}
 
-    <title>
+{% block content %}
 
-        Settings
+<div class="topbar">
 
-    </title>
+```
+<div>
 
-</head>
+    <div class="page-title">
+        Server Settings
+    </div>
 
-<body>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Configure dashboard and moderation settings
+    </p>
 
-<h1>
+</div>
+```
 
-Server Settings
+</div>
 
-</h1>
+<div class="card">
 
-<a href="/guild/{{ guild_id }}">
-
-Back
-
-</a>
-
-|
-
-<a href="/guild/{{ guild_id }}/automod">
-
-Automod
-
-</a>
-
-<hr>
+```
+<div class="section-title">
+    Configuration
+</div>
 
 <form method="POST">
 
-<h3>
+    <label>
+        Log Channel ID
+    </label>
 
-Log Channel
+    <input
+        type="text"
+        name="log_channel"
+        placeholder="Discord Channel ID"
+        value="{{ settings.log_channel if settings else '' }}"
+    >
 
-</h3>
+    <label>
+        Moderator Role ID
+    </label>
 
-<input
-type="text"
-name="log_channel"
-value="{{ settings.log_channel if settings else '' }}"
->
+    <input
+        type="text"
+        name="mod_role"
+        placeholder="Discord Role ID"
+        value="{{ settings.mod_role if settings else '' }}"
+    >
 
-<br><br>
+    <label>
+        Announcement Channel ID
+    </label>
 
-<h3>
+    <input
+        type="text"
+        name="announcement_channel"
+        placeholder="Discord Channel ID"
+        value="{{ settings.announcement_channel if settings else '' }}"
+    >
 
-Moderator Role ID
-
-</h3>
-
-<input
-type="text"
-name="mod_role"
-value="{{ settings.mod_role if settings else '' }}"
->
-
-<br><br>
-
-<h3>
-
-Announcement Channel
-
-</h3>
-
-<input
-type="text"
-name="announcement_channel"
-value="{{ settings.announcement_channel if settings else '' }}"
->
-
-<br><br>
-
-<button type="submit">
-
-Save Settings
-
-</button>
+    <button
+        type="submit"
+        class="btn"
+    >
+        Save Settings
+    </button>
 
 </form>
+```
 
-</body>
+</div>
 
-</html>
+<div
+    class="card"
+    style="margin-top:25px;"
+>
+
+```
+<div class="section-title">
+    Current Configuration
+</div>
+
+<table>
+
+    <tbody>
+
+        <tr>
+            <td>Log Channel</td>
+            <td>
+                {{ settings.log_channel if settings and settings.log_channel else "Not Configured" }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Moderator Role</td>
+            <td>
+                {{ settings.mod_role if settings and settings.mod_role else "Not Configured" }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Announcement Channel</td>
+            <td>
+                {{ settings.announcement_channel if settings and settings.announcement_channel else "Not Configured" }}
+            </td>
+        </tr>
+
+    </tbody>
+
+</table>
+```
+
+</div>
+
+<br>
+
+<a
+href="/guild/{{ guild_id }}"
+class="btn"
+
+>
+
+```
+← Back
+```
+
+</a>
+
+{% endblock %}
