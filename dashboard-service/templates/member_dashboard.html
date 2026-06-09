@@ -1,98 +1,119 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+{{ guild_name }} | Member Portal
+{% endblock %}
 
-    <title>
+{% block content %}
 
-        {{ guild_name }}
+<div class="topbar">
 
-    </title>
-
-</head>
-
-<body>
-
-<h1>
-
-Member Portal
-
-</h1>
-
-<h2>
-
-{{ guild_name }}
-
-</h2>
-
-<hr>
-
-<ul>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/applications">
-
-Applications
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/appeals">
-
-Appeals
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/suggestions">
-
-Suggestions
-
-</a>
-
-</li>
-
-<li>
-
-<a href="/guild/{{ guild_id }}/tickets">
-
-Tickets
-
-</a>
-
-</li>
-
-</ul>
-
-<hr>
-
+```
 <div>
 
-Role:
+    <div class="page-title">
+        {{ guild_name }}
+    </div>
 
-<b>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Member Portal
+    </p>
 
-MEMBER
+</div>
 
-</b>
+<span class="badge">
+    MEMBER
+</span>
+```
+
+</div>
+
+<div class="grid">
+
+```
+<div class="card">
+
+    <h3>💡 Suggestions</h3>
+
+    <p style="margin:15px 0;color:#9ca3af;">
+        Submit ideas and feedback to improve the server.
+    </p>
+
+    <a
+        href="/guild/{{ guild_id }}/suggestions"
+        class="btn"
+    >
+        Open
+    </a>
+
+</div>
+
+<div class="card">
+
+    <h3>⚖ Appeals</h3>
+
+    <p style="margin:15px 0;color:#9ca3af;">
+        Submit and track moderation appeals.
+    </p>
+
+    <a
+        href="/guild/{{ guild_id }}/appeals"
+        class="btn"
+    >
+        Open
+    </a>
+
+</div>
+
+<div class="card">
+
+    <h3>📋 Applications</h3>
+
+    <p style="margin:15px 0;color:#9ca3af;">
+        Apply for staff positions.
+    </p>
+
+    <a
+        href="/guild/{{ guild_id }}/applications"
+        class="btn"
+    >
+        Open
+    </a>
+
+</div>
+
+<div class="card">
+
+    <h3>🎫 Tickets</h3>
+
+    <p style="margin:15px 0;color:#9ca3af;">
+        Create support tickets and communicate with staff.
+    </p>
+
+    <a
+        href="/guild/{{ guild_id }}/tickets"
+        class="btn"
+    >
+        Open
+    </a>
+
+</div>
+```
 
 </div>
 
 <br>
 
-<a href="/dashboard">
+<a
+href="/dashboard"
+class="btn"
 
-Back To Dashboard
+>
+
+```
+← Back to Dashboard
+```
 
 </a>
 
-</body>
-
-</html>
+{% endblock %}
