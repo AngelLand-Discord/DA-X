@@ -1,68 +1,174 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>{{ guild_name }}</title>
-</head>
+{% block title %}
+{{ guild_name }} | DA-X
+{% endblock %}
 
-<body>
+{% block content %}
 
-<h1>{{ guild_name }}</h1>
+<div class="topbar">
 
-<hr>
+    <div>
 
-<h2>Member Features</h2>
+        <div class="page-title">
+            {{ guild_name }}
+        </div>
 
-<ul>
+        <p style="color:#9ca3af;margin-top:8px;">
+            Server Management Panel
+        </p>
 
-<li>
-<a href="/guild/{{ guild_id }}/suggestions">
-Suggestions
+    </div>
+
+</div>
+
+<div class="grid">
+
+    <div class="card">
+
+        <h3>💡 Suggestions</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Manage community suggestions.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/suggestions"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>⚖ Appeals</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Review user appeals.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/appeals"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>🎫 Tickets</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Manage support tickets.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/tickets"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>🛡 Automod</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Configure automatic moderation.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/automod"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>📋 Applications</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Manage staff applications.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/applications"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>🔨 Moderation</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Execute moderation actions.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/moderation"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>📜 Logs</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            View audit logs and events.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/logs"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <h3>👥 Staff Access</h3>
+
+        <p style="margin:15px 0;color:#9ca3af;">
+            Manage dashboard staff permissions.
+        </p>
+
+        <a
+            href="/guild/{{ guild_id }}/staff-access"
+            class="btn"
+        >
+            Open
+        </a>
+
+    </div>
+
+</div>
+
+<br>
+
+<a
+    href="/dashboard"
+    class="btn"
+>
+    ← Back to Dashboard
 </a>
-</li>
 
-<li>
-<a href="/guild/{{ guild_id }}/appeals">
-Appeals
-</a>
-</li>
-
-<li>
-Applications
-</li>
-
-</ul>
-
-<hr>
-
-<h2>Staff Features</h2>
-
-<ul>
-
-<li>
-Moderation
-</li>
-
-<li>
-Announcements
-</li>
-
-<li>
-Logs
-</li>
-
-<li>
-Settings
-</li>
-
-</ul>
-
-<hr>
-
-<a href="/dashboard">
-Back to Dashboard
-</a>
-
-</body>
-
-</html>
+{% endblock %}
