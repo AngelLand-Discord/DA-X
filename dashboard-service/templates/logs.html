@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+
+        Logs
+
+    </title>
+
+</head>
+
+<body>
+
+<h1>
+
+Moderation Logs
+
+</h1>
+
+<a href="/guild/{{ guild_id }}">
+
+Back
+
+</a>
+
+<hr>
+
+{% for log in logs %}
+
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
+
+Action:
+
+<b>
+
+{{ log.action }}
+
+</b>
+
+<br><br>
+
+Target:
+
+{{ log.target }}
+
+<br>
+
+Moderator:
+
+{{ log.moderator }}
+
+<br>
+
+Reason:
+
+{{ log.reason }}
+
+<br>
+
+Time:
+
+{{ log.timestamp }}
+
+</div>
+
+{% endfor %}
+
+</body>
+
+</html>

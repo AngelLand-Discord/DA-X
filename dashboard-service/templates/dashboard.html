@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+
+        Dashboard
+
+    </title>
+
+</head>
+
+<body>
+
+<h1>
+
+Welcome
+
+{{ user.username }}
+
+</h1>
+
+<hr>
+
+<h2>
+
+Your Servers
+
+</h2>
+
+{% for guild in guilds %}
+
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
+
+<h3>
+
+{{ guild.name }}
+
+</h3>
+
+<div>
+
+ID:
+
+{{ guild.id }}
+
+</div>
+
+<br>
+
+<a href="/guild/{{ guild.id }}">
+
+<button>
+
+Open Server
+
+</button>
+
+</a>
+
+</div>
+
+{% endfor %}
+
+<hr>
+
+<a href="/logout">
+
+Logout
+
+</a>
+
+</body>
+
+</html>

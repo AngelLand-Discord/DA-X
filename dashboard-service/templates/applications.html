@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>
+
+Applications
+
+</title>
+
+</head>
+
+<body>
+
+<h1>
+
+Applications
+
+</h1>
+
+<a href="/guild/{{ guild_id }}">
+
+Back
+
+</a>
+
+<hr>
+
+<h2>
+
+Submit Application
+
+</h2>
+
+<form method="POST">
+
+<input
+type="text"
+name="name"
+placeholder="Name"
+required
+>
+
+<br><br>
+
+<input
+type="number"
+name="age"
+placeholder="Age"
+required
+>
+
+<br><br>
+
+<input
+type="text"
+name="timezone"
+placeholder="Timezone"
+required
+>
+
+<br><br>
+
+<textarea
+name="experience"
+rows="5"
+cols="60"
+placeholder="Experience"
+required
+></textarea>
+
+<br><br>
+
+<textarea
+name="reason"
+rows="8"
+cols="60"
+placeholder="Why should we pick you?"
+required
+></textarea>
+
+<br><br>
+
+<button type="submit">
+
+Submit
+
+</button>
+
+</form>
+
+<hr>
+
+{% for application in applications %}
+
+<div style="
+border:1px solid gray;
+padding:10px;
+margin:10px;
+">
+
+<b>
+
+{{ application.username }}
+
+</b>
+
+<br><br>
+
+Name:
+
+{{ application.name }}
+
+<br>
+
+Age:
+
+{{ application.age }}
+
+<br>
+
+Timezone:
+
+{{ application.timezone }}
+
+<br><br>
+
+Experience:
+
+<br>
+
+{{ application.experience }}
+
+<br><br>
+
+Reason:
+
+<br>
+
+{{ application.reason }}
+
+<br><br>
+
+Status:
+
+<b>
+
+{{ application.status }}
+
+</b>
+
+{% if level in ["OWNER", "STAFF"] %}
+<br><br>
+
+<a href="/application/{{ application.id }}/Accepted">
+
+Accept
+
+</a>
+
+|
+
+<a href="/application/{{ application.id }}/Rejected">
+
+Reject
+
+</a>
+
+|
+
+<a href="/application/{{ application.id }}/Pending">
+
+Pending
+
+</a>
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Automod</title>
+</head>
+<body>
+<h1>Automod</h1>
+<h2>{{ guild_name }}</h2>
+
+<a href="/guild/{{ guild_id }}">Back</a>
+
+<hr>
+
+<form method="POST">
+    {% set bad_words = rules.get("bad_words") %}
+    <h3>Bad Words</h3>
+    <label>
+        <input type="checkbox" name="bad_words_enabled" {% if bad_words and bad_words.enabled %}checked{% endif %}>
+        Enabled
+    </label>
+    <br>
+    <textarea name="bad_words_config" rows="4" cols="70" placeholder="Comma-separated blocked words">{{ bad_words.config if bad_words else "" }}</textarea>
+
+    {% set spam = rules.get("spam") %}
+    <h3>Spam</h3>
+    <label>
+        <input type="checkbox" name="spam_enabled" {% if spam and spam.enabled %}checked{% endif %}>
+        Enabled
+    </label>
+    <br>
+    <input type="number" name="spam_config" value="{{ spam.config if spam else '5' }}" min="2" max="10">
+    <small>messages in 8 seconds</small>
+
+    {% set invite_links = rules.get("invite_links") %}
+    <h3>Invite Links</h3>
+    <label>
+        <input type="checkbox" name="invite_links_enabled" {% if invite_links and invite_links.enabled %}checked{% endif %}>
+        Enabled
+    </label>
+
+    {% set caps_spam = rules.get("caps_spam") %}
+    <h3>Caps Spam</h3>
+    <label>
+        <input type="checkbox" name="caps_spam_enabled" {% if caps_spam and caps_spam.enabled %}checked{% endif %}>
+        Enabled
+    </label>
+    <br>
+    <input type="number" name="caps_spam_config" value="{{ caps_spam.config if caps_spam else '70' }}" min="50" max="100">
+    <small>uppercase percentage</small>
+
+    {% set mass_mentions = rules.get("mass_mentions") %}
+    <h3>Mass Mentions</h3>
+    <label>
+        <input type="checkbox" name="mass_mentions_enabled" {% if mass_mentions and mass_mentions.enabled %}checked{% endif %}>
+        Enabled
+    </label>
+    <br>
+    <input type="number" name="mass_mentions_config" value="{{ mass_mentions.config if mass_mentions else '5' }}" min="2" max="25">
+    <small>mentions per message</small>
+
+    <br><br>
+    <button type="submit">Save Automod</button>
+</form>
+
+</body>
+</html>

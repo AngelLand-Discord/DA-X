@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tickets</title>
+</head>
+<body>
+<h1>Tickets</h1>
+<h2>{{ guild_name }}</h2>
+
+<a href="/guild/{{ guild_id }}">Back</a>
+
+<hr>
+
+<h2>Open Ticket</h2>
+<form method="POST">
+    <input type="hidden" name="action" value="open">
+    <input type="text" name="subject" placeholder="Subject" required>
+    <br><br>
+    <textarea name="message" rows="5" cols="70" placeholder="Describe the issue"></textarea>
+    <br><br>
+    <button type="submit">Open Ticket</button>
+</form>
+
+<hr>
+
+{% for ticket in tickets %}
+<div style="border:1px solid gray;padding:10px;margin:10px;">
+    <h3>#{{ ticket.id }} - {{ ticket.subject }}</h3>
+    <div>Status: <b>{{ ticket.status }}</b></div>
+    <div>Opened by: {{ ticket.username }} ({{ ticket.user_id }})</div>
+    <div>Updated: {{ ticket.updated_at }}</div>
+
+    <h4>Messages</h4>
+    {% for message in messages %}
+        {% if message.ticket_id == ticket.id %}
+        <div style="border-top:1px solid #ddd;padding:6px;">
+            <b>{{ message.username }}</b>
+            <small>{{ message.created_at }}</small>
+            <br>
+            {{ message.message }}
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    {% if ticket.status != "Closed" %}
+    <form method="POST">
+        <input type="hidden" name="action" value="reply">
+        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+        <textarea name="message" rows="3" cols="70" required></textarea>
+        <br>
+        <button type="submit">Reply</button>
+    </form>
+    {% endif %}
+
+    {% if level in ["OWNER", "STAFF"] %}
+    <form method="POST" style="display:inline;">
+        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+        <button name="action" value="Close" type="submit">Close</button>
+        <button name="action" value="Reopen" type="submit">Reopen</button>
+        <button name="action" value="Delete" type="submit">Delete</button>
+    </form>
+    {% endif %}
+</div>
+{% endfor %}
+
+</body>
+</html>
