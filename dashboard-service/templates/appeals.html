@@ -1,75 +1,241 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Appeals</title>
-</head>
+{% block title %}
+Appeals | DA-X
+{% endblock %}
 
-<body>
+{% block content %}
 
-<h1>Appeals</h1>
+<div class="topbar">
 
-<a href="/guild/{{ guild_id }}">
-Back
-</a>
+    <div>
 
-<hr>
+        <div class="page-title">
+            Appeals
+        </div>
 
-<h2>Submit Appeal</h2>
+        <p style="color:#9ca3af;margin-top:8px;">
+            Review and manage user appeals
+        </p>
 
-<form method="POST">
-
-<textarea
-name="appeal"
-rows="10"
-cols="60"
-required
-></textarea>
-
-<br><br>
-
-<button type="submit">
-Submit Appeal
-</button>
-
-</form>
-
-<hr>
-
-<h2>Existing Appeals</h2>
-
-{% for appeal in appeals %}
-
-<div style="
-border:1px solid gray;
-padding:10px;
-margin:10px;
-">
-
-<b>{{ appeal.username }}</b>
-
-<br><br>
-
-{{ appeal.appeal }}
-
-<br><br>
-
-Status:
-<b>{{ appeal.status }}</b>
-
-{% if level in ["OWNER", "STAFF"] %}
-<br><br>
-<a href="/appeal/{{ appeal.id }}/Accepted">Accept</a>
-|
-<a href="/appeal/{{ appeal.id }}/Rejected">Reject</a>
-|
-<a href="/appeal/{{ appeal.id }}/Pending">Pending</a>
-{% endif %}
+    </div>
 
 </div>
 
-{% endfor %}
+<div class="card" style="margin-bottom:30px;">
 
-</body>
+    <div class="section-title">
+        Submit Appeal
+    </div>
 
-</html>
+    <form method="POST">
+
+        <label>
+            Appeal Type
+        </label>
+
+        <select
+            name="appeal_type"
+            required
+        >
+            <option value="Ban Appeal">
+                Ban Appeal
+            </option>
+
+            <option value="Timeout Appeal">
+                Timeout Appeal
+            </option>
+
+            <option value="Kick Appeal">
+                Kick Appeal
+            </option>
+
+            <option value="Warning Appeal">
+                Warning Appeal
+            </option>
+        </select>
+
+        <label>
+            Appeal Reason
+        </label>
+
+        <textarea
+            name="appeal"
+            rows="8"
+            required
+            placeholder="Explain why your punishment should be reviewed..."
+        ></textarea>
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            Submit Appeal
+        </button>
+
+    </form>
+
+</div>
+
+<div class="card">
+
+    <div class="section-title">
+        Appeal History
+    </div>
+
+    {% if appeals %}
+
+        {% for appeal in appeals %}
+
+        <div
+            style="
+            background:#202737;
+            padding:20px;
+            border-radius:14px;
+            margin-bottom:15px;
+            "
+        >
+
+            <div
+                style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                flex-wrap:wrap;
+                gap:10px;
+                "
+            >
+
+                <div>
+
+                    <h3>
+                        {{ appeal.username }}
+                    </h3>
+
+                    <small style="color:#9ca3af;">
+                        User ID:
+                        {{ appeal.user_id }}
+                    </small>
+
+                </div>
+
+                <div>
+
+                    <span
+                        class="badge badge-pending"
+                    >
+                        {{ appeal.appeal_type }}
+                    </span>
+
+                    {% if appeal.status == "Pending" %}
+
+                    <span
+                        class="badge badge-pending"
+                    >
+                        Pending
+                    </span>
+
+                    {% elif appeal.status == "Accepted" %}
+
+                    <span
+                        class="badge badge-approved"
+                    >
+                        Accepted
+                    </span>
+
+                    {% else %}
+
+                    <span
+                        class="badge badge-rejected"
+                    >
+                        Rejected
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <hr
+                style="
+                border:none;
+                border-top:1px solid rgba(255,255,255,.08);
+                margin:15px 0;
+                "
+            >
+
+            <p
+                style="
+                line-height:1.7;
+                color:#d1d5db;
+                "
+            >
+                {{ appeal.appeal }}
+            </p>
+
+            {% if appeal.status == "Pending" %}
+
+            <div
+                style="
+                margin-top:20px;
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                "
+            >
+
+                <form
+                    method="POST"
+                    action="/appeal/{{ appeal.id }}/accept"
+                >
+
+                    <button
+                        class="btn btn-green"
+                    >
+                        Accept
+                    </button>
+
+                </form>
+
+                <form
+                    method="POST"
+                    action="/appeal/{{ appeal.id }}/reject"
+                >
+
+                    <button
+                        class="btn btn-red"
+                    >
+                        Reject
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p style="color:#9ca3af;">
+            No appeals found.
+        </p>
+
+    {% endif %}
+
+</div>
+
+<br>
+
+<a
+    href="/guild/{{ guild_id }}"
+    class="btn"
+>
+    ← Back
+</a>
+
+{% endblock %}
