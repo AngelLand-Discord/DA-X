@@ -202,9 +202,7 @@ async def main():
         await bot.start(TOKEN)
 
 
-if __name__ == "__main__":
-
-    def start_bot():
+def start_bot():
 
     asyncio.run(main())
 
