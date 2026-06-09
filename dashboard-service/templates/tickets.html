@@ -1,67 +1,329 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tickets</title>
-</head>
-<body>
-<h1>Tickets</h1>
-<h2>{{ guild_name }}</h2>
+{% extends "base.html" %}
 
-<a href="/guild/{{ guild_id }}">Back</a>
+{% block title %}
+Tickets | DA-X
+{% endblock %}
 
-<hr>
+{% block content %}
 
-<h2>Open Ticket</h2>
+<div class="topbar">
+
+```
+<div>
+
+    <div class="page-title">
+        Support Tickets
+    </div>
+
+    <p style="color:#9ca3af;margin-top:8px;">
+        Manage support requests and conversations
+    </p>
+
+</div>
+```
+
+</div>
+
+<div class="card" style="margin-bottom:30px;">
+
+```
+<div class="section-title">
+    Create Ticket
+</div>
+
 <form method="POST">
-    <input type="hidden" name="action" value="open">
-    <input type="text" name="subject" placeholder="Subject" required>
-    <br><br>
-    <textarea name="message" rows="5" cols="70" placeholder="Describe the issue"></textarea>
-    <br><br>
-    <button type="submit">Open Ticket</button>
+
+    <input
+        type="hidden"
+        name="action"
+        value="open"
+    >
+
+    <label>
+        Subject
+    </label>
+
+    <input
+        type="text"
+        name="subject"
+        placeholder="Ticket subject"
+        required
+    >
+
+    <label>
+        Initial Message
+    </label>
+
+    <textarea
+        name="message"
+        rows="6"
+        placeholder="Describe your issue..."
+        required
+    ></textarea>
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Create Ticket
+    </button>
+
 </form>
+```
 
-<hr>
+</div>
 
-{% for ticket in tickets %}
-<div style="border:1px solid gray;padding:10px;margin:10px;">
-    <h3>#{{ ticket.id }} - {{ ticket.subject }}</h3>
-    <div>Status: <b>{{ ticket.status }}</b></div>
-    <div>Opened by: {{ ticket.username }} ({{ ticket.user_id }})</div>
-    <div>Updated: {{ ticket.updated_at }}</div>
+<div class="card">
 
-    <h4>Messages</h4>
-    {% for message in messages %}
-        {% if message.ticket_id == ticket.id %}
-        <div style="border-top:1px solid #ddd;padding:6px;">
-            <b>{{ message.username }}</b>
-            <small>{{ message.created_at }}</small>
-            <br>
-            {{ message.message }}
+```
+<div class="section-title">
+    Tickets
+</div>
+
+{% if tickets %}
+
+    {% for ticket in tickets %}
+
+    <div
+        style="
+        background:#202737;
+        border-radius:14px;
+        padding:20px;
+        margin-bottom:20px;
+        "
+    >
+
+        <div
+            style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:10px;
+            "
+        >
+
+            <div>
+
+                <h3>
+                    #{{ ticket.id }} - {{ ticket.subject }}
+                </h3>
+
+                <small style="color:#9ca3af;">
+                    {{ ticket.username }}
+                    •
+                    {{ ticket.user_id }}
+                </small>
+
+            </div>
+
+            <div>
+
+                {% if ticket.status == "Open" %}
+
+                <span class="badge badge-approved">
+                    Open
+                </span>
+
+                {% else %}
+
+                <span class="badge badge-rejected">
+                    Closed
+                </span>
+
+                {% endif %}
+
+            </div>
+
         </div>
+
+        <hr
+            style="
+            border:none;
+            border-top:1px solid rgba(255,255,255,.08);
+            margin:15px 0;
+            "
+        >
+
+        <div style="margin-bottom:20px;">
+
+            {% for msg in messages %}
+
+                {% if msg.ticket_id == ticket.id %}
+
+                <div
+                    style="
+                    background:#181d2a;
+                    padding:12px;
+                    border-radius:10px;
+                    margin-bottom:10px;
+                    "
+                >
+
+                    <strong>
+                        {{ msg.username }}
+                    </strong>
+
+                    <br><br>
+
+                    {{ msg.message }}
+
+                </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+        {% if ticket.status == "Open" %}
+
+        <form method="POST">
+
+            <input
+                type="hidden"
+                name="action"
+                value="reply"
+            >
+
+            <input
+                type="hidden"
+                name="ticket_id"
+                value="{{ ticket.id }}"
+            >
+
+            <textarea
+                name="message"
+                rows="3"
+                placeholder="Reply..."
+                required
+            ></textarea>
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Send Reply
+            </button>
+
+        </form>
+
         {% endif %}
+
+        {% if level in ["OWNER", "STAFF"] %}
+
+        <div
+            style="
+            display:flex;
+            gap:10px;
+            margin-top:15px;
+            flex-wrap:wrap;
+            "
+        >
+
+            {% if ticket.status == "Open" %}
+
+            <form method="POST">
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="Close"
+                >
+
+                <input
+                    type="hidden"
+                    name="ticket_id"
+                    value="{{ ticket.id }}"
+                >
+
+                <button
+                    class="btn btn-red"
+                >
+                    Close
+                </button>
+
+            </form>
+
+            {% else %}
+
+            <form method="POST">
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="Reopen"
+                >
+
+                <input
+                    type="hidden"
+                    name="ticket_id"
+                    value="{{ ticket.id }}"
+                >
+
+                <button
+                    class="btn btn-green"
+                >
+                    Reopen
+                </button>
+
+            </form>
+
+            {% endif %}
+
+            <form method="POST">
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="Delete"
+                >
+
+                <input
+                    type="hidden"
+                    name="ticket_id"
+                    value="{{ ticket.id }}"
+                >
+
+                <button
+                    class="btn btn-red"
+                >
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
     {% endfor %}
 
-    {% if ticket.status != "Closed" %}
-    <form method="POST">
-        <input type="hidden" name="action" value="reply">
-        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-        <textarea name="message" rows="3" cols="70" required></textarea>
-        <br>
-        <button type="submit">Reply</button>
-    </form>
-    {% endif %}
+{% else %}
 
-    {% if level in ["OWNER", "STAFF"] %}
-    <form method="POST" style="display:inline;">
-        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-        <button name="action" value="Close" type="submit">Close</button>
-        <button name="action" value="Reopen" type="submit">Reopen</button>
-        <button name="action" value="Delete" type="submit">Delete</button>
-    </form>
-    {% endif %}
+    <p style="color:#9ca3af;">
+        No tickets found.
+    </p>
+
+{% endif %}
+```
+
 </div>
-{% endfor %}
 
-</body>
-</html>
+<br>
+
+<a
+href="/guild/{{ guild_id }}"
+class="btn"
+
+>
+
+```
+← Back
+```
+
+</a>
+
+{% endblock %}
