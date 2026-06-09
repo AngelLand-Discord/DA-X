@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{{ guild_name }} | Staff Panel
+Staff Access | DA-X
 {% endblock %}
 
 {% block content %}
@@ -12,84 +12,113 @@
 <div>
 
     <div class="page-title">
-        {{ guild_name }}
+        Staff Access
     </div>
 
     <p style="color:#9ca3af;margin-top:8px;">
-        Staff Dashboard
+        Manage dashboard staff permissions
     </p>
 
 </div>
-
-<span class="badge badge-pending">
-    STAFF
-</span>
 ```
 
 </div>
 
-<div class="grid">
+<div class="card" style="margin-bottom:30px;">
 
 ```
-<div class="card">
-    <h3>📜 Logs</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        View moderation history and server actions.
-    </p>
-    <a href="/guild/{{ guild_id }}/logs" class="btn">
-        Open
-    </a>
+<div class="section-title">
+    Add Staff Member
+</div>
+
+<form method="POST">
+
+    <label>
+        Discord User ID
+    </label>
+
+    <input
+        type="text"
+        name="user_id"
+        placeholder="Enter Discord User ID"
+        required
+    >
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Add Staff
+    </button>
+
+</form>
+```
+
 </div>
 
 <div class="card">
-    <h3>🔨 Moderation</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        Manage warnings and moderation actions.
-    </p>
-    <a href="/guild/{{ guild_id }}/moderation" class="btn">
-        Open
-    </a>
+
+```
+<div class="section-title">
+    Staff Members
 </div>
 
-<div class="card">
-    <h3>💡 Suggestions</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        Review community suggestions.
-    </p>
-    <a href="/guild/{{ guild_id }}/suggestions" class="btn">
-        Open
-    </a>
-</div>
+{% if staff_users %}
 
-<div class="card">
-    <h3>⚖ Appeals</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        Review user appeals.
-    </p>
-    <a href="/guild/{{ guild_id }}/appeals" class="btn">
-        Open
-    </a>
-</div>
+    <table>
 
-<div class="card">
-    <h3>📋 Applications</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        Review applications.
-    </p>
-    <a href="/guild/{{ guild_id }}/applications" class="btn">
-        Open
-    </a>
-</div>
+        <thead>
 
-<div class="card">
-    <h3>🎫 Tickets</h3>
-    <p style="margin:15px 0;color:#9ca3af;">
-        Manage support tickets.
+            <tr>
+                <th>User ID</th>
+                <th>Role</th>
+                <th>Added By</th>
+                <th>Created</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for user in staff_users %}
+
+            <tr>
+
+                <td>
+                    {{ user.user_id }}
+                </td>
+
+                <td>
+
+                    <span class="badge badge-approved">
+                        {{ user.role }}
+                    </span>
+
+                </td>
+
+                <td>
+                    {{ user.added_by }}
+                </td>
+
+                <td>
+                    {{ user.created_at }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% else %}
+
+    <p style="color:#9ca3af;">
+        No staff members added yet.
     </p>
-    <a href="/guild/{{ guild_id }}/tickets" class="btn">
-        Open
-    </a>
-</div>
+
+{% endif %}
 ```
 
 </div>
@@ -97,13 +126,13 @@
 <br>
 
 <a
-href="/dashboard"
+href="/guild/{{ guild_id }}"
 class="btn"
 
 >
 
 ```
-← Back to Dashboard
+← Back
 ```
 
 </a>
