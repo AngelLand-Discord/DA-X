@@ -1,185 +1,279 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+Applications | DA-X
+{% endblock %}
 
-<title>
+{% block content %}
 
-Applications
+<div class="topbar">
 
-</title>
+```
+<div>
 
-</head>
+    <div class="page-title">
+        Staff Applications
+    </div>
 
-<body>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Apply for staff positions or review applications
+    </p>
 
-<h1>
-
-Applications
-
-</h1>
-
-<a href="/guild/{{ guild_id }}">
-
-Back
-
-</a>
-
-<hr>
-
-<h2>
-
-Submit Application
-
-</h2>
-
-<form method="POST">
-
-<input
-type="text"
-name="name"
-placeholder="Name"
-required
->
-
-<br><br>
-
-<input
-type="number"
-name="age"
-placeholder="Age"
-required
->
-
-<br><br>
-
-<input
-type="text"
-name="timezone"
-placeholder="Timezone"
-required
->
-
-<br><br>
-
-<textarea
-name="experience"
-rows="5"
-cols="60"
-placeholder="Experience"
-required
-></textarea>
-
-<br><br>
-
-<textarea
-name="reason"
-rows="8"
-cols="60"
-placeholder="Why should we pick you?"
-required
-></textarea>
-
-<br><br>
-
-<button type="submit">
-
-Submit
-
-</button>
-
-</form>
-
-<hr>
-
-{% for application in applications %}
-
-<div style="
-border:1px solid gray;
-padding:10px;
-margin:10px;
-">
-
-<b>
-
-{{ application.username }}
-
-</b>
-
-<br><br>
-
-Name:
-
-{{ application.name }}
-
-<br>
-
-Age:
-
-{{ application.age }}
-
-<br>
-
-Timezone:
-
-{{ application.timezone }}
-
-<br><br>
-
-Experience:
-
-<br>
-
-{{ application.experience }}
-
-<br><br>
-
-Reason:
-
-<br>
-
-{{ application.reason }}
-
-<br><br>
-
-Status:
-
-<b>
-
-{{ application.status }}
-
-</b>
-
-{% if level in ["OWNER", "STAFF"] %}
-<br><br>
-
-<a href="/application/{{ application.id }}/Accepted">
-
-Accept
-
-</a>
-
-|
-
-<a href="/application/{{ application.id }}/Rejected">
-
-Reject
-
-</a>
-
-|
-
-<a href="/application/{{ application.id }}/Pending">
-
-Pending
-
-</a>
-{% endif %}
+</div>
+```
 
 </div>
 
-{% endfor %}
+<div class="card" style="margin-bottom:30px;">
 
-</body>
+```
+<div class="section-title">
+    Submit Application
+</div>
 
-</html>
+<form method="POST">
+
+    <label>
+        Name
+    </label>
+
+    <input
+        type="text"
+        name="name"
+        required
+        placeholder="Your name"
+    >
+
+    <label>
+        Age
+    </label>
+
+    <input
+        type="text"
+        name="age"
+        required
+        placeholder="Your age"
+    >
+
+    <label>
+        Timezone
+    </label>
+
+    <input
+        type="text"
+        name="timezone"
+        required
+        placeholder="UTC+0, UTC+5:30, etc"
+    >
+
+    <label>
+        Experience
+    </label>
+
+    <textarea
+        name="experience"
+        rows="4"
+        required
+        placeholder="Previous moderation experience"
+    ></textarea>
+
+    <label>
+        Why should we choose you?
+    </label>
+
+    <textarea
+        name="reason"
+        rows="6"
+        required
+        placeholder="Tell us why you would be a good staff member"
+    ></textarea>
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Submit Application
+    </button>
+
+</form>
+```
+
+</div>
+
+<div class="card">
+
+```
+<div class="section-title">
+    Applications
+</div>
+
+{% if applications %}
+
+    {% for application in applications %}
+
+    <div
+        style="
+        background:#202737;
+        padding:20px;
+        border-radius:14px;
+        margin-bottom:20px;
+        "
+    >
+
+        <div
+            style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:10px;
+            "
+        >
+
+            <div>
+
+                <h3>
+                    {{ application.username }}
+                </h3>
+
+                <small style="color:#9ca3af;">
+                    User ID:
+                    {{ application.user_id }}
+                </small>
+
+            </div>
+
+            <div>
+
+                {% if application.status == "Pending" %}
+
+                <span class="badge badge-pending">
+                    Pending
+                </span>
+
+                {% elif application.status == "Accepted" %}
+
+                <span class="badge badge-approved">
+                    Accepted
+                </span>
+
+                {% elif application.status == "Rejected" %}
+
+                <span class="badge badge-rejected">
+                    Rejected
+                </span>
+
+                {% else %}
+
+                <span class="badge">
+                    {{ application.status }}
+                </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <hr
+            style="
+            border:none;
+            border-top:1px solid rgba(255,255,255,.08);
+            margin:15px 0;
+            "
+        >
+
+        <p><strong>Name:</strong> {{ application.name }}</p>
+        <br>
+
+        <p><strong>Age:</strong> {{ application.age }}</p>
+        <br>
+
+        <p><strong>Timezone:</strong> {{ application.timezone }}</p>
+        <br>
+
+        <p><strong>Experience:</strong></p>
+
+        <p
+            style="
+            color:#d1d5db;
+            margin-top:8px;
+            line-height:1.7;
+            "
+        >
+            {{ application.experience }}
+        </p>
+
+        <br>
+
+        <p><strong>Reason:</strong></p>
+
+        <p
+            style="
+            color:#d1d5db;
+            margin-top:8px;
+            line-height:1.7;
+            "
+        >
+            {{ application.reason }}
+        </p>
+
+        {% if application.status == "Pending" %}
+
+        <div
+            style="
+            margin-top:20px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            "
+        >
+
+            <a
+                href="/application/{{ application.id }}/Accepted"
+                class="btn btn-green"
+            >
+                ✓ Accept
+            </a>
+
+            <a
+                href="/application/{{ application.id }}/Rejected"
+                class="btn btn-red"
+            >
+                ✕ Reject
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p style="color:#9ca3af;">
+        No applications found.
+    </p>
+
+{% endif %}
+```
+
+</div>
+
+<br>
+
+<a
+href="/guild/{{ guild_id }}"
+class="btn"
+
+>
+
+```
+← Back
+```
+
+</a>
+
+{% endblock %}
