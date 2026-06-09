@@ -34,6 +34,9 @@ MEMBER_FEATURES = {"suggestions", "appeals", "applications", "tickets"}
 app = Flask(__name__, template_folder=str(BASE_DIR / "templates"))
 app.secret_key = SECRET_KEY
 
+from datetime import timedelta
+
+app.permanent_session_lifetime = timedelta(days=30)
 
 def get_db():
     db = sqlite3.connect(DATABASE_PATH)
@@ -222,15 +225,21 @@ def login_required(func):
 
 def get_user_guild(guild_id):
     try:
-        guilds = discord_get("/users/@me/guilds", session["token"])
+        guilds = discord_get(
+            "/users/@me/guilds",
+            session["token"]
+        )
     except requests.RequestException:
-        raise Forbidden("Discord session expired. Please log in again.")
+        session.clear()
+        raise Forbidden(
+            "Session expired"
+        )
     for guild in guilds:
-        if str(guild.get("id")) == str(guild_id):
+        if str(guild["id"]) == str(guild_id):
             return guild
-    raise NotFound("Guild not found or not available to this Discord account.")
-
-
+    raise NotFound(
+        "Guild not found"
+    )
 def is_staff(guild_id, user_id):
     db = get_db()
     row = db.execute(
@@ -239,7 +248,6 @@ def is_staff(guild_id, user_id):
     ).fetchone()
     db.close()
     return row is not None
-
 
 def access_level(guild_id):
     guild = get_user_guild(guild_id)
@@ -335,6 +343,7 @@ def callback():
         return render_template("error.html", title="OAuth failed", message="Unable to complete Discord login."), 400
 
     session["token"] = access_token
+    session.permanent = True
     session["user"] = {
         "id": str(user["id"]),
         "username": user.get("username", "Discord User"),
@@ -736,8 +745,15 @@ def application_status(item_id, status):
 
 @app.errorhandler(403)
 def forbidden(error):
-    return render_template("error.html", title="Access denied", message=str(error)), 403
-
+    if "Session expired" in str(error):
+        return redirect(
+            url_for("login")
+        )
+    return render_template(
+        "error.html",
+        title="Access denied",
+        message=str(error)
+    ), 403
 
 @app.errorhandler(404)
 def not_found(error):
