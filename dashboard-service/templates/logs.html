@@ -1,76 +1,166 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+Logs | DA-X
+{% endblock %}
 
-    <title>
+{% block content %}
 
-        Logs
+<div class="topbar">
 
-    </title>
+```
+<div>
 
-</head>
+    <div class="page-title">
+        Server Logs
+    </div>
 
-<body>
+    <p style="color:#9ca3af;margin-top:8px;">
+        Review moderation and dashboard activity
+    </p>
 
-<h1>
-
-Moderation Logs
-
-</h1>
-
-<a href="/guild/{{ guild_id }}">
-
-Back
-
-</a>
-
-<hr>
-
-{% for log in logs %}
-
-<div style="
-border:1px solid gray;
-padding:10px;
-margin:10px;
-">
-
-Action:
-
-<b>
-
-{{ log.action }}
-
-</b>
-
-<br><br>
-
-Target:
-
-{{ log.target }}
-
-<br>
-
-Moderator:
-
-{{ log.moderator }}
-
-<br>
-
-Reason:
-
-{{ log.reason }}
-
-<br>
-
-Time:
-
-{{ log.timestamp }}
+</div>
+```
 
 </div>
 
-{% endfor %}
+<div class="card">
 
-</body>
+```
+<div class="section-title">
+    Recent Activity
+</div>
 
-</html>
+{% if logs %}
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Moderator</th>
+                <th>Reason</th>
+                <th>Timestamp</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for log in logs %}
+
+            <tr>
+
+                <td>
+                    #{{ log.id }}
+                </td>
+
+                <td>
+
+                    {% if log.action == "BAN" %}
+
+                    <span class="badge badge-rejected">
+                        BAN
+                    </span>
+
+                    {% elif log.action == "KICK" %}
+
+                    <span class="badge badge-rejected">
+                        KICK
+                    </span>
+
+                    {% elif log.action == "WARN" %}
+
+                    <span class="badge badge-pending">
+                        WARN
+                    </span>
+
+                    {% elif log.action == "TIMEOUT" %}
+
+                    <span class="badge badge-pending">
+                        TIMEOUT
+                    </span>
+
+                    {% elif log.action == "UNBAN" %}
+
+                    <span class="badge badge-approved">
+                        UNBAN
+                    </span>
+
+                    {% elif log.action == "UNTIMEOUT" %}
+
+                    <span class="badge badge-approved">
+                        UNTIMEOUT
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge">
+                        {{ log.action }}
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+                    {{ log.target }}
+                </td>
+
+                <td>
+                    {{ log.moderator }}
+                </td>
+
+                <td>
+                    {{ log.reason or "No reason provided" }}
+                </td>
+
+                <td>
+                    {{ log.timestamp }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% else %}
+
+    <div
+        style="
+        text-align:center;
+        padding:40px;
+        color:#9ca3af;
+        "
+    >
+        No logs available.
+    </div>
+
+{% endif %}
+```
+
+</div>
+
+<br>
+
+<a
+href="/guild/{{ guild_id }}"
+class="btn"
+
+>
+
+```
+← Back
+```
+
+</a>
+
+{% endblock %}
