@@ -8,6 +8,7 @@ Appeals | DA-X
 
 <div class="topbar">
 
+```
 <div>
 
     <div class="page-title">
@@ -15,15 +16,17 @@ Appeals | DA-X
     </div>
 
     <p style="color:#9ca3af;margin-top:8px;">
-        Review and manage user appeals
+        Review and manage punishment appeals
     </p>
 
 </div>
+```
 
 </div>
 
 <div class="card" style="margin-bottom:30px;">
 
+```
 <div class="section-title">
     Submit Appeal
 </div>
@@ -53,6 +56,7 @@ Appeals | DA-X
         <option value="Warning Appeal">
             Warning Appeal
         </option>
+
     </select>
 
     <label>
@@ -74,11 +78,13 @@ Appeals | DA-X
     </button>
 
 </form>
+```
 
 </div>
 
 <div class="card">
 
+```
 <div class="section-title">
     Appeal History
 </div>
@@ -113,8 +119,7 @@ Appeals | DA-X
                 </h3>
 
                 <small style="color:#9ca3af;">
-                    User ID:
-                    {{ appeal.user_id }}
+                    User ID: {{ appeal.user_id }}
                 </small>
 
             </div>
@@ -122,7 +127,7 @@ Appeals | DA-X
             <div>
 
                 <span class="badge badge-pending">
-                    {{ appeal.appeal_type }}
+                    {{ appeal.appeal_type if appeal.appeal_type else "Ban Appeal" }}
                 </span>
 
                 {% if appeal.status == "Pending" %}
@@ -141,12 +146,6 @@ Appeals | DA-X
 
                 <span class="badge badge-rejected">
                     Rejected
-                </span>
-
-                {% else %}
-
-                <span class="badge">
-                    {{ appeal.status }}
                 </span>
 
                 {% endif %}
@@ -172,7 +171,7 @@ Appeals | DA-X
             {{ appeal.appeal }}
         </p>
 
-        {% if appeal.status == "Pending" %}
+        {% if level in ["OWNER", "STAFF"] and appeal.status == "Pending" %}
 
         <div
             style="
@@ -212,6 +211,7 @@ Appeals | DA-X
     </p>
 
 {% endif %}
+```
 
 </div>
 
@@ -223,7 +223,9 @@ class="btn"
 
 >
 
+```
 ← Back
+```
 
 </a>
 
