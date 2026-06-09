@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DA-X Dashboard{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Inter',sans-serif;
+        }
+
+        body{
+            background:#0f1117;
+            color:white;
+            min-height:100vh;
+        }
+
+        .layout{
+            display:flex;
+            min-height:100vh;
+        }
+
+        .sidebar{
+            width:260px;
+            background:#151924;
+            border-right:1px solid rgba(255,255,255,.08);
+            padding:25px;
+        }
+
+        .logo{
+            font-size:28px;
+            font-weight:700;
+            color:#5865F2;
+            margin-bottom:35px;
+        }
+
+        .logo span{
+            color:white;
+        }
+
+        .nav-link{
+            display:block;
+            padding:14px 18px;
+            margin-bottom:10px;
+            border-radius:12px;
+            text-decoration:none;
+            color:#d1d5db;
+            transition:.25s;
+        }
+
+        .nav-link:hover{
+            background:#5865F2;
+            color:white;
+        }
+
+        .content{
+            flex:1;
+            padding:35px;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:35px;
+        }
+
+        .page-title{
+            font-size:32px;
+            font-weight:700;
+        }
+
+        .card{
+            background:#181d2a;
+            border:1px solid rgba(255,255,255,.06);
+            border-radius:18px;
+            padding:25px;
+            box-shadow:0 10px 30px rgba(0,0,0,.25);
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:20px;
+        }
+
+        .stat-card{
+            background:#181d2a;
+            border-radius:18px;
+            padding:25px;
+            border:1px solid rgba(255,255,255,.06);
+        }
+
+        .stat-number{
+            font-size:30px;
+            font-weight:700;
+            margin-top:8px;
+        }
+
+        .btn{
+            background:#5865F2;
+            color:white;
+            border:none;
+            padding:12px 20px;
+            border-radius:10px;
+            cursor:pointer;
+            text-decoration:none;
+            display:inline-block;
+            transition:.2s;
+        }
+
+        .btn:hover{
+            opacity:.9;
+            transform:translateY(-1px);
+        }
+
+        .btn-green{
+            background:#22c55e;
+        }
+
+        .btn-red{
+            background:#ef4444;
+        }
+
+        .badge{
+            display:inline-block;
+            padding:6px 12px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:600;
+        }
+
+        .badge-pending{
+            background:#f59e0b;
+            color:white;
+        }
+
+        .badge-approved{
+            background:#22c55e;
+            color:white;
+        }
+
+        .badge-rejected{
+            background:#ef4444;
+            color:white;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            text-align:left;
+            padding:15px;
+            background:#202737;
+        }
+
+        td{
+            padding:15px;
+            border-top:1px solid rgba(255,255,255,.06);
+        }
+
+        input,
+        textarea,
+        select{
+            width:100%;
+            background:#202737;
+            border:none;
+            color:white;
+            padding:14px;
+            border-radius:10px;
+            margin-top:8px;
+            margin-bottom:15px;
+        }
+
+        textarea{
+            resize:vertical;
+        }
+
+        .section-title{
+            font-size:22px;
+            margin-bottom:20px;
+            font-weight:600;
+        }
+
+        @media(max-width:900px){
+
+            .layout{
+                flex-direction:column;
+            }
+
+            .sidebar{
+                width:100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+
+        <div class="logo">
+            DA<span>-X</span>
+        </div>
+
+        <a href="/dashboard" class="nav-link">
+            Dashboard
+        </a>
+
+        <a href="/logout" class="nav-link">
+            Logout
+        </a>
+
+    </div>
+
+    <div class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
