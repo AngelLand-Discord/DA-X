@@ -22,7 +22,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
     raise RuntimeError("DISCORD_TOKEN is missing.")
 
-PREFIX = os.getenv("BOT_PREFIX", "a ")
+PREFIX = os.getenv("BOT_PREFIX", "dax ")
 
 OWNER_ID = int(
     os.getenv(
@@ -193,19 +193,33 @@ async def load_cogs():
 
 async def main():
 
+    print("1. initialize_database")
     initialize_database()
+
+    print("2. entering bot context")
 
     async with bot:
 
+        print("3. loading cogs")
         await load_cogs()
 
-        await bot.start(TOKEN)
+        print("4. cogs loaded")
 
+        print("5. starting bot")
+        await bot.start(TOKEN)
 
 def start_bot():
 
-    asyncio.run(main())
+    print("BOT: start_bot() called")
 
+    try:
+
+        asyncio.run(main())
+
+    except Exception:
+
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
 
