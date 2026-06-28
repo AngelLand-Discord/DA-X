@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+import json
 
 DATABASE_PATH = Path(__file__).resolve().parents[1] / "bot.db"
 
@@ -135,7 +136,21 @@ def initialize_database():
         updated_at TEXT NOT NULL,
         UNIQUE(guild_id, rule_type)
     );
+    
+    CREATE TABLE IF NOT EXISTS command_queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guild_id TEXT NOT NULL
+        requested_by TEXT NOT NULL,
+        command_type TEXT NOT NULL,
+        command_name TEXT NOT NULL,
+        payload TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'Pending',
+        error TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL,
+        started_at TEXT,
+        completed_at TEXT
 
+    );
     CREATE TABLE IF NOT EXISTS invites (
         guild_id TEXT NOT NULL,
         user_id TEXT NOT NULL,
@@ -293,3 +308,106 @@ def get_open_ticket_for_user(guild_id, user_id):
         (str(guild_id), str(user_id)),
     )
     return CUR.fetchone()
+def queue_command(
+    guild_id,
+    requested_by,
+    command_type,
+    command_name,
+    payload,
+):
+
+    CUR.execute(
+        """
+        INSERT INTO command_queue
+        (
+            guild_id,
+            requested_by,
+            command_type,
+            command_name,
+            payload,
+            created_at
+        )
+        VALUES
+        (
+            ?,?,?,?,?,?
+        )
+        """,
+        (
+            str(guild_id),
+            str(requested_by),
+            command_type,
+            command_name,
+            json.dumps(payload),
+            now(),
+        ),
+    )
+
+    return CUR.lastrowid
+
+
+def get_next_command():
+
+    CUR.execute(
+        """
+        SELECT *
+        FROM command_queue
+        WHERE status='Pending'
+        ORDER BY id
+        LIMIT 1
+        """
+    )
+
+    return CUR.fetchone()
+
+
+def start_command(command_id):
+
+    CUR.execute(
+        """
+        UPDATE command_queue
+        SET
+            status='Running',
+            started_at=?
+        WHERE id=?
+        """,
+        (
+            now(),
+            command_id,
+        ),
+    )
+
+
+def finish_command(command_id):
+
+    CUR.execute(
+        """
+        UPDATE command_queue
+        SET
+            status='Completed',
+            completed_at=?
+        WHERE id=?
+        """,
+        (
+            now(),
+            command_id,
+        ),
+    )
+
+
+def fail_command(command_id, error):
+
+    CUR.execute(
+        """
+        UPDATE command_queue
+        SET
+            status='Failed',
+            error=?,
+            completed_at=?
+        WHERE id=?
+        """,
+        (
+            str(error),
+            now(),
+            command_id,
+        ),
+    )
