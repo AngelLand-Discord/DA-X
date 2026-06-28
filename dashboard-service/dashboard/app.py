@@ -10,6 +10,11 @@ from dotenv import load_dotenv
 from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug.exceptions import Forbidden, NotFound
 
+from datetime import timedelta
+app = Flask(__name__, template_folder=str(BASE_DIR / "templates"))
+app.secret_key = SECRET_KEY
+app.permanent_session_lifetime = timedelta(days=30)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASE_PATH = BASE_DIR.parent / "bot-service" / "bot.db"
 
@@ -319,14 +324,16 @@ def login():
 
 @app.route("/callback")
 def callback():
-
     code = request.args.get("code")
 
     if not code:
-        return "Discord did not return an authorization code.", 400
+        return render_template(
+            "error.html",
+            title="OAuth failed",
+            message="Discord did not return an authorization code."
+        ), 400
 
     try:
-
         token_response = requests.post(
             f"{DISCORD_API}/oauth2/token",
             data={
@@ -342,9 +349,6 @@ def callback():
             timeout=15,
         )
 
-        print("STATUS:", token_response.status_code)
-        print("BODY:", token_response.text)
-
         token_response.raise_for_status()
 
         token_json = token_response.json()
@@ -356,28 +360,15 @@ def callback():
             access_token
         )
 
-    except Exception as e:
+    except (KeyError, requests.RequestException):
 
-        body = ""
-
-        if "token_response" in locals():
-            body = token_response.text
-
-        return f"""
-<h1>OAuth Debug</h1>
-
-<h2>Python Exception</h2>
-<pre>{e}</pre>
-
-<h2>Status Code</h2>
-<pre>{token_response.status_code if 'token_response' in locals() else 'N/A'}</pre>
-
-<h2>Discord Response</h2>
-<pre>{body}</pre>
-"""
+        return render_template(
+            "error.html",
+            title="OAuth failed",
+            message="Unable to complete Discord login."
+        ), 400
 
     session.permanent = True
-
     session["token"] = access_token
 
     session["user"] = {
