@@ -23,20 +23,62 @@ class AutoMod(commands.Cog):
         except (TypeError, ValueError):
             return default
 
-    async def punish(self, message, reason):
-        try:
-            await message.delete()
-        except Exception:
-            pass
+    async def punish(self, message, reason, action="delete"):
+
+    action = (action or "delete").lower()
+
+    try:
+        await message.delete()
+    except Exception:
+        pass
+
+    if action == "warn":
+
         try:
             await message.channel.send(
-                f"{message.author.mention} {reason}",
-                delete_after=8,
-                allowed_mentions=None,
+                f"{message.author.mention} ⚠ {reason}",
+                delete_after=8
             )
         except Exception:
             pass
-        log_action(message.guild.id, "AUTOMOD", message.author.id, self.bot.user.id, reason)
+
+    elif action == "timeout":
+
+        try:
+            await message.author.timeout(
+                timedelta(minutes=10),
+                reason="AutoMod"
+            )
+        except Exception:
+            pass
+
+    elif action == "kick":
+
+        try:
+            await message.guild.kick(
+                message.author,
+                reason="AutoMod"
+            )
+        except Exception:
+            pass
+
+    elif action == "ban":
+
+        try:
+            await message.guild.ban(
+                message.author,
+                reason="AutoMod"
+            )
+        except Exception:
+            pass
+
+    log_action(
+        message.guild.id,
+        "AUTOMOD",
+        message.author.id,
+        self.bot.user.id,
+        f"{reason} ({action})"
+    )
 
     @commands.Cog.listener()
     async def on_message(self, message):
