@@ -319,10 +319,14 @@ def login():
 
 @app.route("/callback")
 def callback():
+
     code = request.args.get("code")
+
     if not code:
-        return render_template("error.html", title="OAuth failed", message="Discord did not return an authorization code."), 400
+        return "Discord did not return an authorization code.", 400
+
     try:
+
         token_response = requests.post(
             f"{DISCORD_API}/oauth2/token",
             data={
@@ -332,24 +336,57 @@ def callback():
                 "code": code,
                 "redirect_uri": REDIRECT_URI,
             },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
             timeout=15,
         )
+
+        print("STATUS:", token_response.status_code)
+        print("BODY:", token_response.text)
+
         token_response.raise_for_status()
+
         token_json = token_response.json()
+
         access_token = token_json["access_token"]
-        user = discord_get("/users/@me", access_token)
-    except (KeyError, requests.RequestException):
-        return render_template("error.html", title="OAuth failed", message="Unable to complete Discord login."), 400
+
+        user = discord_get(
+            "/users/@me",
+            access_token
+        )
+
+    except Exception as e:
+
+        body = ""
+
+        if "token_response" in locals():
+            body = token_response.text
+
+        return f"""
+<h1>OAuth Debug</h1>
+
+<h2>Python Exception</h2>
+<pre>{e}</pre>
+
+<h2>Status Code</h2>
+<pre>{token_response.status_code if 'token_response' in locals() else 'N/A'}</pre>
+
+<h2>Discord Response</h2>
+<pre>{body}</pre>
+"""
+
+    session.permanent = True
 
     session["token"] = access_token
-    session.permanent = True
+
     session["user"] = {
         "id": str(user["id"]),
         "username": user.get("username", "Discord User"),
         "avatar": user.get("avatar"),
         "access_token": access_token,
     }
+
     return redirect(url_for("dashboard"))
 
 
