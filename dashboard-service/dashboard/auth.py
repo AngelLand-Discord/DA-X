@@ -9,14 +9,14 @@ from flask import (
     url_for,
 )
 
-from config import (
+from .config import (
     CLIENT_ID,
     CLIENT_SECRET,
     REDIRECT_URI,
     DISCORD_API,
 )
 
-from utils import discord_get
+from .utils import discord_get
 
 
 auth_bp = Blueprint(
