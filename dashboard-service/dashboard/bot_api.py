@@ -2,8 +2,8 @@ import requests
 
 from flask import session
 
-from config import DISCORD_API
-from utils import discord_get
+from .config import DISCORD_API
+from .utils import discord_get
 
 
 def get_bot_guilds():
