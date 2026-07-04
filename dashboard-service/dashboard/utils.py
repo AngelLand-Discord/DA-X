@@ -75,7 +75,7 @@ def require_login():
     ):
 
         return redirect(
-            url_for("login")
+            url_for("auth.login")
         )
 
     return None

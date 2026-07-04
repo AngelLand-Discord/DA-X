@@ -31,7 +31,7 @@ def login_required(func):
             "token" not in session
         ):
             return redirect(
-                url_for("login")
+                url_for("auth.login")
             )
 
         return func(*args, **kwargs)
