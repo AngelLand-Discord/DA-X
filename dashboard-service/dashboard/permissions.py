@@ -4,17 +4,17 @@ import requests
 from flask import session, redirect, url_for
 from werkzeug.exceptions import Forbidden, NotFound
 
-from config import (
+from .config import (
     OWNER_FEATURES,
     STAFF_FEATURES,
     MEMBER_FEATURES,
 )
 
-from database import (
+from .database import (
     get_db,
 )
 
-from utils import (
+from .utils import (
     current_user_id,
     discord_get,
 )
