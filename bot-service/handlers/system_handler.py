@@ -1,10 +1,9 @@
 import discord
 
+from .base_handler import BaseHandler
 
-class SystemHandler:
 
-    def __init__(self, bot):
-        self.bot = bot
+class SystemHandler(BaseHandler):
 
     async def execute(self, command, payload):
 
@@ -31,16 +30,12 @@ class SystemHandler:
         elif command == "SLOWMODE":
             return await self.slowmode(payload)
 
-        raise ValueError(f"Unknown System Command: {command}")
+        raise ValueError(f"Unknown system command: {command}")
 
     async def announce(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
-
-        if channel is None:
-            raise ValueError("Channel not found.")
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
         embed = discord.Embed(
             title="📢 Announcement",
@@ -48,107 +43,111 @@ class SystemHandler:
             colour=discord.Colour.blurple()
         )
 
+        if payload.get("footer"):
+            embed.set_footer(text=payload["footer"])
+
+        if payload.get("thumbnail"):
+            embed.set_thumbnail(url=payload["thumbnail"])
+
+        if payload.get("image"):
+            embed.set_image(url=payload["image"])
+
         await channel.send(embed=embed)
+
+        return self.success(action="ANNOUNCE")
 
     async def say(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
-        if channel is None:
-            raise ValueError("Channel not found.")
+        await channel.send(payload["message"])
 
-        await channel.send(
-            payload["message"]
-        )
+        return self.success(action="SAY")
 
     async def embed(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
-
-        if channel is None:
-            raise ValueError("Channel not found.")
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
         embed = discord.Embed(
             title=payload["title"],
             description=payload["description"],
             colour=discord.Colour.from_str(
-                payload.get(
-                    "colour",
-                    "#5865F2"
-                )
+                payload.get("colour", "#5865F2")
             )
         )
 
-        await channel.send(
-            embed=embed
-        )
+        if payload.get("footer"):
+            embed.set_footer(text=payload["footer"])
+
+        if payload.get("thumbnail"):
+            embed.set_thumbnail(url=payload["thumbnail"])
+
+        if payload.get("image"):
+            embed.set_image(url=payload["image"])
+
+        await channel.send(embed=embed)
+
+        return self.success(action="EMBED")
 
     async def purge(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
+
+        deleted = await channel.purge(
+            limit=int(payload["amount"])
         )
 
-        if channel is None:
-            raise ValueError("Channel not found.")
-
-        await channel.purge(
-            limit=int(payload["amount"])
+        return self.success(
+            action="PURGE",
+            deleted=len(deleted)
         )
 
     async def lockdown(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
-
-        if channel is None:
-            raise ValueError("Channel not found.")
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
         overwrite = channel.overwrites_for(
-            channel.guild.default_role
+            guild.default_role
         )
 
         overwrite.send_messages = False
 
         await channel.set_permissions(
-            channel.guild.default_role,
+            guild.default_role,
             overwrite=overwrite
         )
 
+        return self.success(action="LOCKDOWN")
+
     async def unlock(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
-
-        if channel is None:
-            raise ValueError("Channel not found.")
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
         overwrite = channel.overwrites_for(
-            channel.guild.default_role
+            guild.default_role
         )
 
         overwrite.send_messages = None
 
         await channel.set_permissions(
-            channel.guild.default_role,
+            guild.default_role,
             overwrite=overwrite
         )
 
+        return self.success(action="UNLOCK")
+
     async def slowmode(self, payload):
 
-        channel = self.bot.get_channel(
-            int(payload["channel_id"])
-        )
-
-        if channel is None:
-            raise ValueError("Channel not found.")
+        guild = self.guild(payload["guild_id"])
+        channel = self.channel(guild, payload["channel_id"])
 
         await channel.edit(
             slowmode_delay=int(payload["seconds"])
         )
+
+        return self.success(action="SLOWMODE")
