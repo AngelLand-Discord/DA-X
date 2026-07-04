@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 from discord.ext import commands, tasks
@@ -12,6 +11,7 @@ from database.database import (
 
 from handlers.system_handler import SystemHandler
 from handlers.developer_handler import DeveloperHandler
+from handlers.moderation_handler import ModerationHandler
 
 
 class CommandWorker(commands.Cog):
@@ -22,6 +22,7 @@ class CommandWorker(commands.Cog):
 
         self.system = SystemHandler(bot)
         self.developer = DeveloperHandler(bot)
+        self.moderation = ModerationHandler(bot)
 
         self.worker.start()
 
@@ -46,7 +47,6 @@ class CommandWorker(commands.Cog):
             payload = json.loads(row["payload"])
 
             command_type = row["command_type"].upper()
-
             command_name = row["command_name"].upper()
 
             if command_type == "SYSTEM":
@@ -62,6 +62,13 @@ class CommandWorker(commands.Cog):
                     command_name,
                     payload,
                     row["requested_by"]
+                )
+
+            elif command_type == "MODERATION":
+
+                await self.moderation.execute(
+                    command_name,
+                    payload
                 )
 
             else:
