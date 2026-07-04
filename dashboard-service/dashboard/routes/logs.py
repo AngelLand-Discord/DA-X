@@ -3,8 +3,8 @@ from flask import (
     render_template,
 )
 
-from permissions import require_feature
-from database import fetchall
+from ..permissions import require_feature
+from ..database import fetchall
 
 logs_bp = Blueprint(
     "logs",
