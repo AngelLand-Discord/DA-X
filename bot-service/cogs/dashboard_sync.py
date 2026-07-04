@@ -27,67 +27,122 @@ class DashboardSync(commands.Cog):
         db.row_factory = sqlite3.Row
         cur = db.cursor()
 
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS bot_status(
-                id INTEGER PRIMARY KEY,
-                online INTEGER NOT NULL,
-                latency REAL NOT NULL,
-                guilds INTEGER NOT NULL,
-                users INTEGER NOT NULL,
-                uptime TEXT,
-                updated_at TEXT NOT NULL
-            )
-            """
+    # -----------------------------------
+    # Status Table
+    # -----------------------------------
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS bot_status(
+        id INTEGER PRIMARY KEY,
+        online INTEGER NOT NULL,
+        latency REAL NOT NULL,
+        guilds INTEGER NOT NULL,
+        users INTEGER NOT NULL,
+        uptime TEXT,
+        updated_at TEXT NOT NULL
         )
+        """)
+
+    # -----------------------------------
+    # Guild Table
+    # -----------------------------------
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS bot_guilds(
+            guild_id TEXT PRIMARY KEY,
+            guild_name TEXT NOT NULL,
+            icon TEXT,
+            owner_id TEXT,
+            member_count INTEGER
+        )
+        """)
 
         guild_count = len(self.bot.guilds)
 
         user_count = sum(
             guild.member_count or 0
             for guild in self.bot.guilds
+     )
+
+        latency = round(
+            self.bot.latency * 1000,
+            2
         )
 
-        latency = round(self.bot.latency * 1000, 2)
+        cur.execute("""
+        INSERT INTO bot_status
+        (
+            id,
+            online,
+            latency,
+            guilds,
+            users,
+            uptime,
+            updated_at
+        )
+        VALUES
+        (
+            1,
+            1,
+            ?,
+            ?,
+            ?,
+            datetime('now'),
+            datetime('now')
+        )
+
+        ON CONFLICT(id)
+
+        DO UPDATE SET
+
+            online=1,
+
+            latency=excluded.latency,
+
+            guilds=excluded.guilds,
+
+            users=excluded.users,
+
+            updated_at=datetime('now')
+        """,
+        (
+            latency,
+            guild_count,
+            user_count,
+        ))
+
+    # -----------------------------------
+    # Refresh Guild List
+    # -----------------------------------
 
         cur.execute(
-            """
-            INSERT INTO bot_status
-            (
-                id,
-                online,
-                latency,
-                guilds,
-                users,
-                uptime,
-                updated_at
-            )
-            VALUES
-            (
-                1,
-                1,
-                ?,
-                ?,
-                ?,
-                datetime('now'),
-                datetime('now')
-            )
-            ON CONFLICT(id)
-            DO UPDATE SET
-                online=excluded.online,
-                latency=excluded.latency,
-                guilds=excluded.guilds,
-                users=excluded.users,
-                updated_at=datetime('now')
-            """,
-            (
-                latency,
-                guild_count,
-                user_count,
-            ),
+            "DELETE FROM bot_guilds"
         )
 
+        for guild in self.bot.guilds:
+
+            cur.execute("""
+            INSERT INTO bot_guilds
+            (
+                guild_id,
+                guild_name,
+                icon,
+                owner_id,
+                member_count
+            )
+            VALUES
+            (?, ?, ?, ?, ?)
+            """,
+            (
+                str(guild.id),
+                guild.name,
+                guild.icon.key if guild.icon else None,
+                str(guild.owner_id),
+                guild.member_count,
+            ))
+
         db.commit()
+
         db.close()
 
     @sync_status.before_loop
