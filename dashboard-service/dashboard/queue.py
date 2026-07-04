@@ -1,207 +1,202 @@
 import json
-from datetime import datetime, timezone
 
-from dashboard.database import (
-    execute,
-    fetch_all,
-    fetch_one,
-)
+from database import add_command
+from utils import utc_now, current_user_id
 
 
-def utc_now():
-    return datetime.now(timezone.utc).isoformat()
+class Queue:
 
+    @staticmethod
+    def push(
+        guild_id,
+        command_type,
+        command_name,
+        payload,
+    ):
 
-def add_command(
-    guild_id,
-    requested_by,
-    command_type,
-    command_name,
-    payload=None,
-):
+        add_command(
 
-    if payload is None:
-        payload = {}
+            guild_id=guild_id,
 
-    return execute(
-        """
-        INSERT INTO command_queue
-        (
+            requested_by=current_user_id(),
+
+            command_type=command_type.upper(),
+
+            command_name=command_name.upper(),
+
+            payload=json.dumps(payload),
+
+            created_at=utc_now(),
+
+        )
+
+    # ----------------------------
+    # Moderation
+    # ----------------------------
+
+    @staticmethod
+    def warn(guild_id, user_id, reason):
+
+        Queue.push(
+
             guild_id,
-            requested_by,
-            command_type,
-            command_name,
-            payload,
-            status,
-            created_at
+
+            "MODERATION",
+
+            "WARN",
+
+            {
+
+                "guild_id": guild_id,
+
+                "user_id": user_id,
+
+                "reason": reason,
+
+            },
+
         )
-        VALUES
-        (
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            'Pending',
-            ?
+
+    @staticmethod
+    def kick(guild_id, user_id, reason):
+
+        Queue.push(
+
+            guild_id,
+
+            "MODERATION",
+
+            "KICK",
+
+            {
+
+                "guild_id": guild_id,
+
+                "user_id": user_id,
+
+                "reason": reason,
+
+            },
+
         )
-        """,
-        (
-            str(guild_id),
-            str(requested_by),
-            command_type,
-            command_name,
-            json.dumps(payload),
-            utc_now(),
-        ),
-    )
 
+    @staticmethod
+    def ban(guild_id, user_id, reason):
 
-def get_pending_commands():
+        Queue.push(
 
-    return fetch_all(
-        """
-        SELECT *
-        FROM command_queue
-        WHERE status='Pending'
-        ORDER BY id ASC
-        """
-    )
+            guild_id,
 
+            "MODERATION",
 
-def get_command(command_id):
+            "BAN",
 
-    return fetch_one(
-        """
-        SELECT *
-        FROM command_queue
-        WHERE id=?
-        """,
-        (command_id,),
-    )
+            {
 
+                "guild_id": guild_id,
 
-def mark_running(command_id):
+                "user_id": user_id,
 
-    execute(
-        """
-        UPDATE command_queue
-        SET status='Running'
-        WHERE id=?
-        """,
-        (command_id,),
-    )
+                "reason": reason,
 
+            },
 
-def mark_completed(
-    command_id,
-    result="Completed",
-):
+        )
 
-    execute(
-        """
-        UPDATE command_queue
-        SET
-            status='Completed',
-            result=?,
-            completed_at=?
-        WHERE id=?
-        """,
-        (
-            result,
-            utc_now(),
-            command_id,
-        ),
-    )
+    @staticmethod
+    def timeout(
+        guild_id,
+        user_id,
+        duration,
+        reason,
+    ):
 
+        Queue.push(
 
-def mark_failed(
-    command_id,
-    reason,
-):
+            guild_id,
 
-    execute(
-        """
-        UPDATE command_queue
-        SET
-            status='Failed',
-            result=?,
-            completed_at=?
-        WHERE id=?
-        """,
-        (
-            str(reason),
-            utc_now(),
-            command_id,
-        ),
-    )
+            "MODERATION",
 
+            "TIMEOUT",
 
-def cancel_command(command_id):
+            {
 
-    execute(
-        """
-        UPDATE command_queue
-        SET
-            status='Cancelled',
-            completed_at=?
-        WHERE id=?
-        """,
-        (
-            utc_now(),
-            command_id,
-        ),
-    )
+                "guild_id": guild_id,
 
+                "user_id": user_id,
 
-def clear_completed():
+                "duration": duration,
 
-    execute(
-        """
-        DELETE
-        FROM command_queue
-        WHERE status='Completed'
-        """
-    )
+                "reason": reason,
 
+            },
 
-def queue_stats():
+        )
 
-    pending = fetch_one(
-        """
-        SELECT COUNT(*) AS total
-        FROM command_queue
-        WHERE status='Pending'
-        """
-    )["total"]
+    # ----------------------------
+    # Developer
+    # ----------------------------
 
-    running = fetch_one(
-        """
-        SELECT COUNT(*) AS total
-        FROM command_queue
-        WHERE status='Running'
-        """
-    )["total"]
+    @staticmethod
+    def reload():
 
-    completed = fetch_one(
-        """
-        SELECT COUNT(*) AS total
-        FROM command_queue
-        WHERE status='Completed'
-        """
-    )["total"]
+        Queue.push(
 
-    failed = fetch_one(
-        """
-        SELECT COUNT(*) AS total
-        FROM command_queue
-        WHERE status='Failed'
-        """
-    )["total"]
+            "0",
 
-    return {
-        "pending": pending,
-        "running": running,
-        "completed": completed,
-        "failed": failed,
-    }
+            "DEVELOPER",
+
+            "RELOAD",
+
+            {},
+
+        )
+
+    @staticmethod
+    def sync():
+
+        Queue.push(
+
+            "0",
+
+            "DEVELOPER",
+
+            "SYNC",
+
+            {},
+
+        )
+
+    @staticmethod
+    def stop():
+
+        Queue.push(
+
+            "0",
+
+            "DEVELOPER",
+
+            "STOP",
+
+            {},
+
+        )
+
+    @staticmethod
+    def broadcast(message):
+
+        Queue.push(
+
+            "0",
+
+            "DEVELOPER",
+
+            "BROADCAST",
+
+            {
+
+                "message": message,
+
+            },
+
+        )
