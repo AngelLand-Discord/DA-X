@@ -132,7 +132,7 @@ def callback():
     }
 
     return redirect(
-        url_for("dashboard")
+        url_for("dashboard.index")
     )
 
 
