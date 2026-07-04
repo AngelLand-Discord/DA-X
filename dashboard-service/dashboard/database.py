@@ -1,202 +1,227 @@
 import sqlite3
-from contextlib import closing
 
-from dashboard.config import DATABASE_PATH
+from config import DATABASE_PATH
 
 
 def get_db():
+
     db = sqlite3.connect(DATABASE_PATH)
+
     db.row_factory = sqlite3.Row
+
     return db
 
 
 def execute(query, params=()):
-    with closing(get_db()) as db:
-        cur = db.execute(query, params)
-        db.commit()
-        return cur.lastrowid
+
+    db = get_db()
+
+    cur = db.execute(query, params)
+
+    db.commit()
+
+    db.close()
+
+    return cur
 
 
-def fetch_one(query, params=()):
-    with closing(get_db()) as db:
-        return db.execute(query, params).fetchone()
+def fetchone(query, params=()):
+
+    db = get_db()
+
+    row = db.execute(query, params).fetchone()
+
+    db.close()
+
+    return row
 
 
-def fetch_all(query, params=()):
-    with closing(get_db()) as db:
-        return db.execute(query, params).fetchall()
+def fetchall(query, params=()):
+
+    db = get_db()
+
+    rows = db.execute(query, params).fetchall()
+
+    db.close()
+
+    return rows
 
 
-def column_exists(table, column):
-    with closing(get_db()) as db:
-        cur = db.execute(f"PRAGMA table_info({table})")
-        return any(row["name"] == column for row in cur.fetchall())
+def column_exists(cur, table, column):
+
+    cur.execute(f"PRAGMA table_info({table})")
+
+    return any(
+        row["name"] == column
+        for row in cur.fetchall()
+    )
 
 
 def table_has_column(table, column):
-    return column_exists(table, column)
+
+    db = get_db()
+
+    cur = db.cursor()
+
+    exists = column_exists(
+        cur,
+        table,
+        column
+    )
+
+    db.close()
+
+    return exists
 
 
 def initialize_database():
 
-    with closing(get_db()) as db:
+    db = get_db()
 
-        cur = db.cursor()
+    cur = db.cursor()
 
-        cur.executescript(
-            """
-            PRAGMA foreign_keys = ON;
+    cur.executescript(
+        """
+        PRAGMA foreign_keys = ON;
 
-            CREATE TABLE IF NOT EXISTS guild_permissions (
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                role TEXT NOT NULL DEFAULT 'staff',
-                added_by TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (guild_id,user_id)
-            );
+        CREATE TABLE IF NOT EXISTS command_queue(
 
-            CREATE TABLE IF NOT EXISTS suggestions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                username TEXT NOT NULL,
-                suggestion TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'Pending',
-                created_at TEXT NOT NULL
-            );
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            CREATE TABLE IF NOT EXISTS appeals (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                username TEXT NOT NULL,
-                appeal_type TEXT NOT NULL DEFAULT 'Ban Appeal',
-                appeal TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'Pending',
-                created_at TEXT NOT NULL
-            );
+            guild_id TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS applications (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                username TEXT NOT NULL,
-                name TEXT NOT NULL DEFAULT '',
-                age TEXT NOT NULL DEFAULT '',
-                timezone TEXT NOT NULL DEFAULT '',
-                experience TEXT NOT NULL DEFAULT '',
-                reason TEXT NOT NULL DEFAULT '',
-                status TEXT NOT NULL DEFAULT 'Pending',
-                created_at TEXT NOT NULL
-            );
+            requested_by TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS tickets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                username TEXT NOT NULL,
-                subject TEXT NOT NULL DEFAULT 'Support Ticket',
-                status TEXT NOT NULL DEFAULT 'Open',
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
-            );
+            command_type TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS ticket_messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ticket_id INTEGER NOT NULL,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                username TEXT NOT NULL,
-                message TEXT NOT NULL,
-                created_at TEXT NOT NULL
-            );
+            command_name TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS modlogs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL DEFAULT '',
-                action TEXT NOT NULL,
-                target TEXT NOT NULL,
-                moderator TEXT NOT NULL,
-                reason TEXT,
-                timestamp TEXT NOT NULL
-            );
+            payload TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS settings (
-                guild_id TEXT PRIMARY KEY,
-                log_channel TEXT,
-                mod_role TEXT,
-                announcement_channel TEXT,
-                dashboard_enabled INTEGER DEFAULT 1
-            );
+            status TEXT NOT NULL DEFAULT 'PENDING',
 
-            CREATE TABLE IF NOT EXISTS warnings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                user_id TEXT NOT NULL,
-                moderator_id TEXT NOT NULL,
-                reason TEXT,
-                created_at TEXT NOT NULL
-            );
+            error TEXT,
 
-            CREATE TABLE IF NOT EXISTS automod_rules (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT NOT NULL,
-                rule_type TEXT NOT NULL,
-                enabled INTEGER NOT NULL DEFAULT 0,
-                punishment TEXT NOT NULL DEFAULT 'warn',
-                threshold INTEGER DEFAULT 5,
-                duration INTEGER DEFAULT 10,
-                ignored_roles TEXT DEFAULT '',
-                ignored_channels TEXT DEFAULT '',
-                config TEXT DEFAULT '',
-                updated_by TEXT,
-                updated_at TEXT NOT NULL,
-                UNIQUE(guild_id, rule_type)
-            );
+            created_at TEXT NOT NULL,
 
-            CREATE TABLE IF NOT EXISTS command_queue (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                guild_id TEXT,
-                requested_by TEXT,
-                command_type TEXT,
-                command_name TEXT,
-                payload TEXT,
-                status TEXT DEFAULT 'Pending',
-                result TEXT DEFAULT '',
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                completed_at TEXT
-            );
-            """
+            started_at TEXT,
+
+            finished_at TEXT
+
+        );
+        """
+    )
+
+    db.commit()
+
+    db.close()
+
+
+# -----------------------------------------
+# Queue Helpers
+# -----------------------------------------
+
+def add_command(
+    guild_id,
+    requested_by,
+    command_type,
+    command_name,
+    payload,
+    created_at,
+):
+
+    execute(
+        """
+        INSERT INTO command_queue
+        (
+            guild_id,
+            requested_by,
+            command_type,
+            command_name,
+            payload,
+            created_at
         )
+        VALUES
+        (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            guild_id,
+            requested_by,
+            command_type,
+            command_name,
+            payload,
+            created_at,
+        ),
+    )
 
-        migrations = {
-            "applications": {
-                "name": "TEXT NOT NULL DEFAULT ''",
-                "age": "TEXT NOT NULL DEFAULT ''",
-                "timezone": "TEXT NOT NULL DEFAULT ''",
-                "experience": "TEXT NOT NULL DEFAULT ''",
-                "reason": "TEXT NOT NULL DEFAULT ''",
-            },
-            "modlogs": {
-                "guild_id": "TEXT NOT NULL DEFAULT ''"
-            },
-            "guild_permissions": {
-                "created_at": "TEXT NOT NULL DEFAULT ''"
-            },
-            "appeals": {
-                "appeal_type": "TEXT NOT NULL DEFAULT 'Ban Appeal'"
-            },
-        }
 
-        for table, columns in migrations.items():
+def get_next_command():
 
-            for column, definition in columns.items():
+    return fetchone(
+        """
+        SELECT *
 
-                if not column_exists(table, column):
+        FROM command_queue
 
-                    cur.execute(
-                        f"ALTER TABLE {table} ADD COLUMN {column} {definition}"
-                    )
+        WHERE status='PENDING'
 
-        db.commit()
+        ORDER BY id
+
+        LIMIT 1
+        """
+    )
+
+
+def start_command(command_id):
+
+    execute(
+        """
+        UPDATE command_queue
+
+        SET
+            status='RUNNING',
+            started_at=datetime('now')
+
+        WHERE id=?
+        """,
+        (command_id,),
+    )
+
+
+def finish_command(command_id):
+
+    execute(
+        """
+        UPDATE command_queue
+
+        SET
+            status='COMPLETED',
+            finished_at=datetime('now')
+
+        WHERE id=?
+        """,
+        (command_id,),
+    )
+
+
+def fail_command(
+    command_id,
+    error,
+):
+
+    execute(
+        """
+        UPDATE command_queue
+
+        SET
+            status='FAILED',
+            error=?,
+            finished_at=datetime('now')
+
+        WHERE id=?
+        """,
+        (
+            str(error),
+            command_id,
+        ),
+    )
