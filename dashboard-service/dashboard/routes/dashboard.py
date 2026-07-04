@@ -4,12 +4,12 @@ from flask import (
     session,
 )
 
-from permissions import (
+from ..permissions import (
     login_required,
     access_level,
 )
 
-from bot_api import (
+from ..bot_api import (
     get_dashboard_guilds,
 )
 
