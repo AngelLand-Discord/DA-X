@@ -1,64 +1,42 @@
-import requests
+from .database import fetchall
+from .utils import discord_get
 
 from flask import session
 
-from .config import DISCORD_API
-from .utils import discord_get
-
 
 def get_bot_guilds():
-
     """
-    Returns a set containing every guild
-    the bot is currently in.
+    Returns every guild the bot is currently in,
+    read directly from SQLite.
     """
 
-    bot_token = session.get("bot_token")
+    rows = fetchall(
+        """
+        SELECT
+            guild_id,
+            guild_name,
+            icon,
+            owner_id,
+            member_count
+        FROM bot_guilds
+        """
+    )
 
-    if not bot_token:
-        return set()
-
-    try:
-
-        response = requests.get(
-
-            f"{DISCORD_API}/users/@me/guilds",
-
-            headers={
-                "Authorization": f"Bot {bot_token}"
-            },
-
-            timeout=15,
-
-        )
-
-        response.raise_for_status()
-
-        guilds = response.json()
-
-        return {
-            str(guild["id"])
-            for guild in guilds
-        }
-
-    except Exception:
-
-        return set()
+    return {
+        row["guild_id"]: row
+        for row in rows
+    }
 
 
 def get_dashboard_guilds():
-
     """
-    Returns only guilds where BOTH
-    the user and the bot are present.
+    Returns only guilds that BOTH
+    the logged-in user and the bot share.
     """
 
     user_guilds = discord_get(
-
         "/users/@me/guilds",
-
-        session["token"]
-
+        session["token"],
     )
 
     bot_guilds = get_bot_guilds()
@@ -67,8 +45,23 @@ def get_dashboard_guilds():
 
     for guild in user_guilds:
 
-        if guild["id"] in bot_guilds:
+        guild_id = str(guild["id"])
 
-            visible.append(guild)
+        if guild_id not in bot_guilds:
+            continue
+
+        bot = bot_guilds[guild_id]
+
+        guild["member_count"] = bot["member_count"]
+
+        guild["owner_id"] = bot["owner_id"]
+
+        guild["icon"] = bot["icon"]
+
+        visible.append(guild)
+
+    visible.sort(
+        key=lambda g: g["name"].lower()
+    )
 
     return visible

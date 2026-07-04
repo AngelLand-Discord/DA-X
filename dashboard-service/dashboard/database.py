@@ -109,6 +109,38 @@ def initialize_database():
             finished_at TEXT
 
         );
+
+        CREATE TABLE IF NOT EXISTS bot_status(
+
+            id INTEGER PRIMARY KEY,
+
+            online INTEGER NOT NULL,
+
+            latency REAL NOT NULL,
+
+            guilds INTEGER NOT NULL,
+
+            users INTEGER NOT NULL,
+
+            uptime TEXT,
+
+            updated_at TEXT NOT NULL
+
+        );
+
+        CREATE TABLE IF NOT EXISTS bot_guilds(
+
+            guild_id TEXT PRIMARY KEY,
+
+            guild_name TEXT NOT NULL,
+
+            icon TEXT,
+
+            owner_id TEXT,
+
+            member_count INTEGER
+
+        );
         """
     )
 
