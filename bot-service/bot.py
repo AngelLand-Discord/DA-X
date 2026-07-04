@@ -157,6 +157,7 @@ async def on_command_error(ctx, error):
 
 COGS = [
     "cogs.moderation",
+    "cogs.command_worker",
     "cogs.automod",
     "cogs.tickets",
     "cogs.announcements",
