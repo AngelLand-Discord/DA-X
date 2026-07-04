@@ -1,7 +1,7 @@
 import json
 
-from database import add_command
-from utils import utc_now, current_user_id
+from .database import add_command
+from .utils import utc_now, current_user_id
 
 
 class Queue:
