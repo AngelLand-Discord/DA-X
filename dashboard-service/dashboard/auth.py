@@ -132,7 +132,7 @@ def callback():
     }
 
     return redirect(
-        url_for("dashboard.index")
+        url_for("dashboard.dashboard")
     )
 
 
@@ -142,5 +142,5 @@ def logout():
     session.clear()
 
     return redirect(
-        url_for("index")
+        url_for("dashboard.index")
     )
