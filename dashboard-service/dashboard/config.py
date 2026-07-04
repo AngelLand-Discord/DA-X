@@ -56,3 +56,5 @@ MEMBER_FEATURES = {
     "applications",
     "tickets",
 }
+
+BOT_DATABASE = DATABASE_PATH
