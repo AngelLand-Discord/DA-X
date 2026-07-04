@@ -8,14 +8,14 @@ from flask import (
     url_for,
 )
 
-from permissions import require_feature
+from ..permissions import require_feature
 
-from database import (
+from ..database import (
     add_command,
     fetchall,
 )
 
-from utils import (
+from ..utils import (
     current_user_id,
     utc_now,
 )
