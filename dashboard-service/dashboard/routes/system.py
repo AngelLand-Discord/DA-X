@@ -5,9 +5,9 @@ from flask import (
     url_for,
 )
 
-from permissions import require_feature
-from utils import clean_text
-from system import SystemService
+from ..permissions import require_feature
+from ..utils import clean_text
+from ..system import SystemService
 
 system_bp = Blueprint(
     "system",
