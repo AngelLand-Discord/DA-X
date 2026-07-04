@@ -1,38 +1,30 @@
 from .queue import Queue
+from .database import (
+    fetchall,
+    fetchone,
+)
 
 
 class DeveloperService:
 
-    # ---------------------------------
-    # Reload Extensions
-    # ---------------------------------
+    # ----------------------------------
+    # Queue Actions
+    # ----------------------------------
 
     @staticmethod
     def reload():
 
         Queue.reload()
 
-    # ---------------------------------
-    # Sync Slash Commands
-    # ---------------------------------
-
     @staticmethod
     def sync():
 
         Queue.sync()
 
-    # ---------------------------------
-    # Stop Bot
-    # ---------------------------------
-
     @staticmethod
     def stop():
 
         Queue.stop()
-
-    # ---------------------------------
-    # Leave Guild
-    # ---------------------------------
 
     @staticmethod
     def leave(guild_id):
@@ -53,23 +45,17 @@ class DeveloperService:
 
         )
 
-    # ---------------------------------
-    # Broadcast
-    # ---------------------------------
-
     @staticmethod
     def broadcast(message):
 
         Queue.broadcast(message)
 
-    # ---------------------------------
-    # Queue Statistics
-    # ---------------------------------
+    # ----------------------------------
+    # Queue Information
+    # ----------------------------------
 
     @staticmethod
-    def queue():
-
-        from database import fetchall
+    def recent_commands(limit=100):
 
         return fetchall(
             """
@@ -79,20 +65,66 @@ class DeveloperService:
 
             ORDER BY id DESC
 
-            LIMIT 100
+            LIMIT ?
+            """,
+            (
+                limit,
+            ),
+        )
+
+    @staticmethod
+    def pending_commands():
+
+        return fetchall(
+            """
+            SELECT *
+
+            FROM command_queue
+
+            WHERE status='PENDING'
+
+            ORDER BY id
             """
         )
 
-    # ---------------------------------
-    # Bot Status
-    # ---------------------------------
+    @staticmethod
+    def running_commands():
+
+        return fetchall(
+            """
+            SELECT *
+
+            FROM command_queue
+
+            WHERE status='RUNNING'
+
+            ORDER BY started_at DESC
+            """
+        )
 
     @staticmethod
-    def status():
+    def failed_commands():
 
-        from database import fetchone
+        return fetchall(
+            """
+            SELECT *
 
-        row = fetchone(
+            FROM command_queue
+
+            WHERE status='FAILED'
+
+            ORDER BY finished_at DESC
+            """
+        )
+
+    # ----------------------------------
+    # Bot Status
+    # ----------------------------------
+
+    @staticmethod
+    def bot_status():
+
+        return fetchone(
             """
             SELECT *
 
@@ -102,4 +134,53 @@ class DeveloperService:
             """
         )
 
-        return row
+    # ----------------------------------
+    # Dashboard Statistics
+    # ----------------------------------
+
+    @staticmethod
+    def statistics():
+
+        return {
+
+            "pending": fetchone(
+                """
+                SELECT COUNT(*) AS count
+
+                FROM command_queue
+
+                WHERE status='PENDING'
+                """
+            )["count"],
+
+            "running": fetchone(
+                """
+                SELECT COUNT(*) AS count
+
+                FROM command_queue
+
+                WHERE status='RUNNING'
+                """
+            )["count"],
+
+            "failed": fetchone(
+                """
+                SELECT COUNT(*) AS count
+
+                FROM command_queue
+
+                WHERE status='FAILED'
+                """
+            )["count"],
+
+            "completed": fetchone(
+                """
+                SELECT COUNT(*) AS count
+
+                FROM command_queue
+
+                WHERE status='COMPLETED'
+                """
+            )["count"],
+
+        }
