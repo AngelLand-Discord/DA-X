@@ -8,12 +8,12 @@ from dotenv import load_dotenv
 from database.database import (
     initialize_database,
     get_tempbans,
-    remove_tempban
+    remove_tempban,
 )
 
-# =========================
+# ==========================================
 # ENVIRONMENT
-# =========================
+# ==========================================
 
 load_dotenv()
 
@@ -27,46 +27,77 @@ PREFIX = os.getenv("BOT_PREFIX", "dax ")
 OWNER_ID = int(
     os.getenv(
         "OWNER_ID",
-        "1023468164304097381"
+        "1023468164304097381",
     )
 )
 
-# =========================
+# ==========================================
 # INTENTS
-# =========================
+# ==========================================
 
 intents = discord.Intents.default()
 
-intents.message_content = True
-intents.members = True
 intents.guilds = True
+intents.members = True
+intents.message_content = True
 intents.dm_messages = True
 
-# =========================
+# ==========================================
 # BOT
-# =========================
+# ==========================================
 
 bot = commands.Bot(
     command_prefix=PREFIX,
     intents=intents,
-    help_command=None
+    help_command=None,
 )
 
 bot.owner_id = OWNER_ID
 
-# =========================
-# TEMPBAN RESTORATION
-# =========================
+# ==========================================
+# COGS
+# ==========================================
 
-async def schedule_unban(user_id, unban_time):
+COGS = [
+
+    "cogs.command_worker",
+
+    "cogs.dashboard_sync",
+
+    "cogs.moderation",
+
+    "cogs.automod",
+
+    "cogs.tickets",
+
+    "cogs.announcements",
+
+    "cogs.permissions",
+
+    "cogs.logging",
+
+]
+
+# ==========================================
+# TEMPBANS
+# ==========================================
+
+
+async def schedule_unban(
+    user_id,
+    unban_time,
+):
 
     from datetime import datetime, timezone
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(
+        timezone.utc
+    )
 
     delay = (
-        datetime.fromisoformat(unban_time)
-        - now
+        datetime.fromisoformat(
+            unban_time
+        ) - now
     ).total_seconds()
 
     if delay < 0:
@@ -77,9 +108,10 @@ async def schedule_unban(user_id, unban_time):
     for guild in bot.guilds:
 
         try:
+
             await guild.unban(
                 discord.Object(id=user_id),
-                reason="Temporary ban expired"
+                reason="Temporary ban expired",
             )
 
         except Exception:
@@ -87,19 +119,55 @@ async def schedule_unban(user_id, unban_time):
 
     remove_tempban(user_id)
 
-# =========================
+
+# ==========================================
 # EVENTS
-# =========================
+# ==========================================
+
+
+@bot.event
+async def setup_hook():
+
+    initialize_database()
+
+    for cog in COGS:
+
+        try:
+
+            await bot.load_extension(
+                cog
+            )
+
+            print(
+                f"Loaded {cog}"
+            )
+
+        except Exception as e:
+
+            print(
+                f"Failed {cog}"
+            )
+
+            print(e)
+
 
 @bot.event
 async def on_ready():
 
     print("=" * 50)
-    print(f"Logged in as {bot.user}")
-    print(f"Guilds: {len(bot.guilds)}")
+
+    print(
+        f"Logged in as {bot.user}"
+    )
+
+    print(
+        f"Guilds: {len(bot.guilds)}"
+    )
+
     print("=" * 50)
 
     try:
+
         synced = await bot.tree.sync()
 
         print(
@@ -107,120 +175,77 @@ async def on_ready():
         )
 
     except Exception as e:
-        print(
-            f"Slash sync failed: {e}"
-        )
+
+        print(e)
 
     for row in get_tempbans():
 
         asyncio.create_task(
+
             schedule_unban(
+
                 row["user_id"],
+
                 row["unban_time"]
+
             )
+
         )
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(
+    ctx,
+    error,
+):
 
     if isinstance(
         error,
-        commands.CommandNotFound
+        commands.CommandNotFound,
     ):
         return
 
     if isinstance(
         error,
-        commands.MissingPermissions
+        commands.MissingPermissions,
     ):
+
         await ctx.send(
-            "You don't have permission to use that command."
+            "You don't have permission."
         )
+
         return
 
     if isinstance(
         error,
-        commands.MissingRequiredArgument
+        commands.MissingRequiredArgument,
     ):
+
         await ctx.send(
-            "Missing required arguments."
+            "Missing arguments."
         )
+
         return
 
-    print(error)
+    raise error
 
 
-# =========================
-# LOAD COGS
-# =========================
+# ==========================================
+# START
+# ==========================================
 
-COGS = [
-    "cogs.moderation",
-    "cogs.command_worker",
-    "cogs.automod",
-    "cogs.tickets",
-    "cogs.announcements",
-    "cogs.permissions",
-    "cogs.logging",
-    "cogs.dashboard_sync",
-]
-
-
-async def load_cogs():
-
-    for cog in COGS:
-
-        try:
-
-            await bot.load_extension(cog)
-
-            print(
-                f"Loaded: {cog}"
-            )
-
-        except Exception as e:
-
-            print(
-                f"Failed to load {cog}"
-            )
-
-            print(e)
-
-
-# =========================
-# STARTUP
-# =========================
 
 async def main():
 
-    print("1. initialize_database")
-    initialize_database()
-
-    print("2. entering bot context")
-
     async with bot:
 
-        print("3. loading cogs")
-        await load_cogs()
-
-        print("4. cogs loaded")
-
-        print("5. starting bot")
         await bot.start(TOKEN)
+
 
 def start_bot():
 
-    print("BOT: start_bot() called")
+    asyncio.run(main())
 
-    try:
-
-        asyncio.run(main())
-
-    except Exception:
-
-        import traceback
-        traceback.print_exc()
 
 if __name__ == "__main__":
 
