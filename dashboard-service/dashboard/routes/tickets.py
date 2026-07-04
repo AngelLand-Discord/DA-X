@@ -6,11 +6,11 @@ from flask import (
     url_for,
 )
 
-from permissions import require_feature
+from ..permissions import require_feature
 
-from database import get_db
+from ..database import get_db
 
-from utils import (
+from ..utils import (
     clean_text,
     utc_now,
     current_user_id,
