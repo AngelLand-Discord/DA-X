@@ -6,21 +6,16 @@ from flask import (
     request,
     redirect,
     url_for,
-    session,
 )
 
 from ..permissions import require_feature
-
-from ..database import (
-    get_db,
-    add_command,
-)
-
+from ..database import get_db
 from ..utils import (
     clean_text,
     current_user_id,
     utc_now,
 )
+from ..services.moderation_service import ModerationService
 
 
 moderation_bp = Blueprint(
@@ -47,7 +42,7 @@ def moderation(
         action = clean_text(
             request.form.get("action"),
             20,
-        ).lower()
+        ).upper()
 
         user_id = clean_text(
             request.form.get("user_id"),
@@ -59,40 +54,45 @@ def moderation(
             500,
         )
 
-        payload = {
+        if action == "WARN":
 
-            "guild_id": guild_id,
+            ModerationService.warn(
+                guild_id,
+                user_id,
+                reason,
+            )
 
-            "user_id": user_id,
+        elif action == "KICK":
 
-            "reason": reason,
+            ModerationService.kick(
+                guild_id,
+                user_id,
+                reason,
+            )
 
-        }
+        elif action == "BAN":
 
-        if action == "timeout":
+            ModerationService.ban(
+                guild_id,
+                user_id,
+                reason,
+            )
 
-            payload["duration"] = int(
+        elif action == "TIMEOUT":
+
+            duration = int(
                 request.form.get(
                     "duration",
                     10,
                 )
             )
 
-        add_command(
-
-            guild_id=guild_id,
-
-            requested_by=current_user_id(),
-
-            command_type="MODERATION",
-
-            command_name=action.upper(),
-
-            payload=json.dumps(payload),
-
-            created_at=utc_now(),
-
-        )
+            ModerationService.timeout(
+                guild_id,
+                user_id,
+                duration,
+                reason,
+            )
 
         db.execute(
             """
@@ -106,11 +106,13 @@ def moderation(
                 timestamp
             )
             VALUES
-            (?, ?, ?, ?, ?, ?)
+            (
+                ?, ?, ?, ?, ?, ?
+            )
             """,
             (
                 guild_id,
-                action.upper(),
+                action,
                 user_id,
                 current_user_id(),
                 reason,
@@ -119,6 +121,13 @@ def moderation(
         )
 
         db.commit()
+
+        return redirect(
+            url_for(
+                "moderation.moderation",
+                guild_id=guild_id,
+            )
+        )
 
     rows = db.execute(
         """
@@ -148,5 +157,7 @@ def moderation(
         guild_name=guild["name"],
 
         logs=rows,
+
+        level=level,
 
     )
