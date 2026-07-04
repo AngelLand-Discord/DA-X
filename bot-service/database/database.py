@@ -139,7 +139,7 @@ def initialize_database():
     
     CREATE TABLE IF NOT EXISTS command_queue (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        guild_id TEXT NOT NULL
+        guild_id TEXT NOT NULL,
         requested_by TEXT NOT NULL,
         command_type TEXT NOT NULL,
         command_name TEXT NOT NULL,
