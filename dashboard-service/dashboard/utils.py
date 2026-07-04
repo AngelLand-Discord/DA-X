@@ -4,7 +4,7 @@ import requests
 from datetime import datetime, timezone
 from flask import session, redirect, url_for
 
-from config import (
+from .config import (
     DISCORD_API,
     VALID_ID,
 )
