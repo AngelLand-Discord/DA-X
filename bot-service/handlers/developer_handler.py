@@ -1,21 +1,9 @@
-import os
 import discord
 
+from .base_handler import BaseHandler
 
-DEV_ID = int(os.getenv("DEV_ID", "0"))
 
-
-class DeveloperHandler:
-
-    def __init__(self, bot):
-        self.bot = bot
-
-    def check_dev(self, user_id: int):
-
-        if int(user_id) != DEV_ID:
-            raise PermissionError(
-                "Only the developer can execute developer commands."
-            )
+class DeveloperHandler(BaseHandler):
 
     async def execute(
         self,
@@ -24,7 +12,7 @@ class DeveloperHandler:
         requested_by
     ):
 
-        self.check_dev(requested_by)
+        self.require_dev(requested_by)
 
         command = command.upper()
 
@@ -43,32 +31,49 @@ class DeveloperHandler:
         elif command == "STOP":
             return await self.stop()
 
+        elif command == "STATUS":
+            return await self.status()
+
         raise ValueError(
             f"Unknown developer command: {command}"
         )
 
     async def leave(self, payload):
 
-        guild = self.bot.get_guild(
-            int(payload["guild_id"])
+        guild = self.guild(
+            payload["guild_id"]
         )
 
-        if guild is None:
-            raise ValueError("Guild not found.")
+        name = guild.name
 
         await guild.leave()
+
+        self.log(
+            f"Left guild: {name}"
+        )
+
+        return self.success(
+            action="LEAVE",
+            guild=name
+        )
 
     async def sync(self):
 
         synced = await self.bot.tree.sync()
 
-        print(
-            f"[Developer] Synced {len(synced)} commands."
+        self.log(
+            f"Synced {len(synced)} commands."
+        )
+
+        return self.success(
+            action="SYNC",
+            commands=len(synced)
         )
 
     async def reload(self):
 
-        count = 0
+        success = []
+        failed = []
 
         for extension in list(self.bot.extensions):
 
@@ -78,18 +83,25 @@ class DeveloperHandler:
                     extension
                 )
 
-                count += 1
+                success.append(extension)
 
             except Exception as e:
 
-                print(
-                    f"Reload failed: {extension}"
+                failed.append(
+                    {
+                        "extension": extension,
+                        "error": str(e)
+                    }
                 )
 
-                print(e)
+        self.log(
+            f"Reloaded {len(success)} extension(s)."
+        )
 
-        print(
-            f"[Developer] Reloaded {count} extensions."
+        return self.success(
+            action="RELOAD",
+            reloaded=success,
+            failed=failed
         )
 
     async def broadcast(self, payload):
@@ -108,33 +120,60 @@ class DeveloperHandler:
 
             for channel in guild.text_channels:
 
-                permissions = channel.permissions_for(
+                perms = channel.permissions_for(
                     guild.me
                 )
 
-                if permissions.send_messages:
+                if not perms.send_messages:
+                    continue
 
-                    try:
+                try:
 
-                        await channel.send(
-                            embed=embed
-                        )
+                    await channel.send(
+                        embed=embed
+                    )
 
-                        sent += 1
+                    sent += 1
+                    break
 
-                        break
+                except Exception:
+                    continue
 
-                    except Exception:
-                        continue
+        self.log(
+            f"Broadcast sent to {sent} guild(s)."
+        )
 
-        print(
-            f"[Developer] Broadcast sent to {sent} guilds."
+        return self.success(
+            action="BROADCAST",
+            guilds=sent
         )
 
     async def stop(self):
 
-        print(
-            "[Developer] Shutdown requested."
+        self.log(
+            "Shutdown requested."
         )
 
         await self.bot.close()
+
+        return self.success(
+            action="STOP"
+        )
+
+    async def status(self):
+
+        users = sum(
+            guild.member_count or 0
+            for guild in self.bot.guilds
+        )
+
+        return self.success(
+            action="STATUS",
+            guilds=len(self.bot.guilds),
+            users=users,
+            latency=round(
+                self.bot.latency * 1000,
+                2
+            ),
+            cogs=len(self.bot.cogs)
+        )
