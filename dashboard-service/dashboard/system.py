@@ -3,10 +3,6 @@ from .queue import Queue
 
 class SystemService:
 
-    # ---------------------------------
-    # Announcements
-    # ---------------------------------
-
     @staticmethod
     def announce(
         guild_id,
@@ -43,10 +39,6 @@ class SystemService:
 
         )
 
-    # ---------------------------------
-    # Say
-    # ---------------------------------
-
     @staticmethod
     def say(
         guild_id,
@@ -73,10 +65,6 @@ class SystemService:
             },
 
         )
-
-    # ---------------------------------
-    # Embed
-    # ---------------------------------
 
     @staticmethod
     def embed(
@@ -120,10 +108,6 @@ class SystemService:
 
         )
 
-    # ---------------------------------
-    # Lockdown
-    # ---------------------------------
-
     @staticmethod
     def lockdown(
         guild_id,
@@ -148,10 +132,6 @@ class SystemService:
 
         )
 
-    # ---------------------------------
-    # Unlock
-    # ---------------------------------
-
     @staticmethod
     def unlock(
         guild_id,
@@ -175,10 +155,6 @@ class SystemService:
             },
 
         )
-
-    # ---------------------------------
-    # Slowmode
-    # ---------------------------------
 
     @staticmethod
     def slowmode(
@@ -206,10 +182,6 @@ class SystemService:
             },
 
         )
-
-    # ---------------------------------
-    # Purge
-    # ---------------------------------
 
     @staticmethod
     def purge(
