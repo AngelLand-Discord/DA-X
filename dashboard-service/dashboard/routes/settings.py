@@ -6,12 +6,12 @@ from flask import (
     url_for,
 )
 
-from permissions import require_feature
-from database import (
+from ..permissions import require_feature
+from ..database import (
     get_db,
     fetchone,
 )
-from utils import (
+from ..utils import (
     clean_text,
     valid_discord_id,
 )
