@@ -9,14 +9,14 @@ from flask import (
     session,
 )
 
-from permissions import require_feature
+from ..permissions import require_feature
 
-from database import (
+from ..database import (
     get_db,
     add_command,
 )
 
-from utils import (
+from ..utils import (
     clean_text,
     current_user_id,
     utc_now,
