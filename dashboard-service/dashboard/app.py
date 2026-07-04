@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from pathlib import Path
 from flask import Flask, render_template
 
 from .config import SECRET_KEY
@@ -20,7 +20,12 @@ from .routes.automod import automod_bp
 from .routes.developer import developer_bp
 from .routes.system import system_bp
 
-app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+app = Flask(
+    __name__,
+    template_folder=BASE_DIR / "templates",
+)
 
 app.secret_key = SECRET_KEY
 
