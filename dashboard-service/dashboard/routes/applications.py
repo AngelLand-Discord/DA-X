@@ -6,12 +6,12 @@ from flask import (
     url_for,
 )
 
-from permissions import require_feature
-from database import (
+from ..permissions import require_feature
+from ..database import (
     get_db,
     table_has_column,
 )
-from utils import (
+from ..utils import (
     clean_text,
     current_user_id,
     utc_now,
