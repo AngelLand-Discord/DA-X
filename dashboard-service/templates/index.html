@@ -1,50 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DA-X Dashboard</title>
 
-    <title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        DA-X Dashboard
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
 
-    </title>
+        body{
+            background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+            color:white;
+            min-height:100vh;
+            overflow-x:hidden;
+        }
+
+        nav{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:25px 10%;
+        }
+
+        .logo{
+            font-size:32px;
+            font-weight:700;
+            color:#5865F2;
+        }
+
+        .login-top{
+            text-decoration:none;
+            color:white;
+            background:#5865F2;
+            padding:12px 22px;
+            border-radius:10px;
+            transition:.25s;
+        }
+
+        .login-top:hover{
+            background:#4752C4;
+        }
+
+        .hero{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+            text-align:center;
+            min-height:75vh;
+            padding:20px;
+        }
+
+        .hero h1{
+            font-size:70px;
+            margin-bottom:15px;
+        }
+
+        .hero h1 span{
+            color:#5865F2;
+        }
+
+        .hero p{
+            max-width:700px;
+            color:#b9c0d0;
+            font-size:20px;
+            margin-bottom:35px;
+        }
+
+        .buttons{
+            display:flex;
+            gap:20px;
+            flex-wrap:wrap;
+            justify-content:center;
+        }
+
+        .btn{
+            text-decoration:none;
+            padding:16px 32px;
+            border-radius:12px;
+            font-weight:600;
+            transition:.25s;
+        }
+
+        .primary{
+            background:#5865F2;
+            color:white;
+        }
+
+        .primary:hover{
+            background:#4752C4;
+            transform:translateY(-3px);
+        }
+
+        .secondary{
+            border:2px solid #5865F2;
+            color:white;
+        }
+
+        .secondary:hover{
+            background:#5865F2;
+        }
+
+        .cards{
+            width:90%;
+            max-width:1200px;
+            margin:auto;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:25px;
+            padding-bottom:80px;
+        }
+
+        .card{
+            background:rgba(255,255,255,.06);
+            backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:18px;
+            padding:30px;
+            transition:.3s;
+        }
+
+        .card:hover{
+            transform:translateY(-10px);
+            border-color:#5865F2;
+        }
+
+        .card h2{
+            margin-bottom:15px;
+            color:#5865F2;
+        }
+
+        .card p{
+            color:#c9d1e3;
+            line-height:1.7;
+        }
+
+        .stats{
+            width:90%;
+            max-width:1000px;
+            margin:70px auto;
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+            gap:30px;
+        }
+
+        .stat{
+            text-align:center;
+        }
+
+        .stat h1{
+            color:#5865F2;
+            font-size:42px;
+        }
+
+        footer{
+            padding:35px;
+            text-align:center;
+            color:#9aa4b7;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<h1>
+<nav>
 
+<div class="logo">
 DA-X
+</div>
 
-</h1>
-
-<h3>
-
-Discord Management Platform
-
-</h3>
-
-<hr>
-
-<p>
-
-Manage your Discord server through the web dashboard.
-
-</p>
-
-<br>
-
-<a href="/login">
-
-<button>
-
-Login With Discord
-
-</button>
-
+<a href="/login" class="login-top">
+Login
 </a>
 
-</body>
+</nav>
 
+<section class="hero">
+
+<h1>
+Meet <span>DA-X</span>
+</h1>
+
+<p>
+The complete Discord Management Platform built for moderation,
+logging, automation, tickets, applications, analytics and much
+more. Because clicking twenty different bots just to ban one spammer
+is a strange hobby.
+</p>
+
+<div class="buttons">
+
+<a href="/login" class="btn primary">
+Login with Discord
+</a>
+
+<a href="#features" class="btn secondary">
+Learn More
+</a>
+
+</div>
+
+</section>
+
+<section class="stats">
+
+<div class="stat">
+<h1>24/7</h1>
+<p>Online</p>
+</div>
+
+<div class="stat">
+<h1>∞</h1>
+<p>Automation</p>
+</div>
+
+<div class="stat">
+<h1>100%</h1>
+<p>Free</p>
+</div>
+
+</section>
+
+<section class="cards" id="features">
+
+<div class="card">
+<h2>🛡 Moderation</h2>
+<p>
+Warn, Kick, Ban, Timeout, Automod, Nicknames, Roles and every moderation tool directly from your dashboard.
+</p>
+</div>
+
+<div class="card">
+<h2>📜 Logging</h2>
+<p>
+Message logs, member joins, leaves, voice activity, moderation history and audit logs in one place.
+</p>
+</div>
+
+<div class="card">
+<h2>⚙ Dashboard</h2>
+<p>
+Manage your Discord server without typing commands. Everything is controlled from an elegant web interface.
+</p>
+</div>
+
+</section>
+
+<footer>
+
+© 2026 DA-X • Built for Discord Communities
+
+</footer>
+
+</body>
 </html>
