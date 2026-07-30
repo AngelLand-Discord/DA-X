@@ -1,100 +1,666 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}
-Automod | DA-X
-{% endblock %}
+<head>
 
-{% block content %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="topbar">
+<title>DA-X | Auto Moderation</title>
 
-<div>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <div class="page-title">
-        Auto Moderation
-    </div>
+<style>
 
-    <p style="color:#9ca3af;margin-top:8px;">
-        Configure automatic moderation rules
-    </p>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Poppins",sans-serif;
+}
+
+body{
+
+background:#0f1117;
+color:white;
+
+}
+
+a{
+
+text-decoration:none;
+color:inherit;
+
+}
+
+.wrapper{
+
+display:flex;
+min-height:100vh;
+
+}
+
+/* =========================
+SIDEBAR
+========================= */
+
+.sidebar{
+
+width:260px;
+background:#171b26;
+border-right:1px solid #2b3245;
+display:flex;
+flex-direction:column;
+
+}
+
+.logo{
+
+padding:30px;
+font-size:34px;
+font-weight:700;
+color:#5865F2;
+text-align:center;
+border-bottom:1px solid #2b3245;
+
+}
+
+.nav{
+
+padding:20px;
+
+}
+
+.nav a{
+
+display:flex;
+align-items:center;
+padding:14px 18px;
+margin-bottom:10px;
+border-radius:12px;
+transition:.25s;
+
+}
+
+.nav a:hover{
+
+background:#252b3d;
+
+}
+
+.nav .active{
+
+background:#5865F2;
+
+}
+
+/* =========================
+CONTENT
+========================= */
+
+.content{
+
+flex:1;
+padding:40px;
+
+}
+
+.page-title{
+
+font-size:42px;
+font-weight:700;
+
+}
+
+.subtitle{
+
+margin-top:8px;
+color:#9ca3af;
+
+}
+
+.card-grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+gap:30px;
+margin-top:45px;
+
+}
+
+/* =========================
+CARD
+========================= */
+
+.card{
+
+background:#1b2030;
+border:1px solid #2f3850;
+border-radius:18px;
+padding:28px;
+transition:.25s;
+
+}
+
+.card:hover{
+
+transform:translateY(-6px);
+border-color:#5865F2;
+box-shadow:0 15px 35px rgba(88,101,242,.18);
+
+}
+
+.card h2{
+
+font-size:24px;
+margin-bottom:25px;
+
+}
+
+/* =========================
+FORM
+========================= */
+
+.setting{
+
+display:flex;
+flex-direction:column;
+margin-bottom:20px;
+
+}
+
+.setting label{
+
+font-size:15px;
+font-weight:600;
+margin-bottom:8px;
+
+}
+
+.setting select,
+.setting input[type=number]{
+
+height:46px;
+background:#262d42;
+border:none;
+border-radius:10px;
+padding:0 14px;
+color:white;
+font-size:15px;
+
+}
+
+.setting select:focus,
+.setting input:focus{
+
+outline:none;
+border:2px solid #5865F2;
+
+}
+
+/* =========================
+SWITCH
+========================= */
+
+.switch{
+
+position:relative;
+display:inline-block;
+width:56px;
+height:30px;
+
+}
+
+.switch input{
+
+display:none;
+
+}
+
+.slider{
+
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#555;
+border-radius:50px;
+transition:.25s;
+
+}
+
+.slider:before{
+
+content:"";
+position:absolute;
+height:24px;
+width:24px;
+left:3px;
+top:3px;
+background:white;
+border-radius:50%;
+transition:.25s;
+
+}
+
+.switch input:checked + .slider{
+
+background:#5865F2;
+
+}
+
+.switch input:checked + .slider:before{
+
+transform:translateX(26px);
+
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.buttons{
+
+display:flex;
+gap:12px;
+margin-top:15px;
+
+}
+
+.btn{
+
+flex:1;
+height:46px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:15px;
+font-weight:600;
+
+}
+
+.save{
+
+background:#5865F2;
+color:white;
+
+}
+
+.save:hover{
+
+background:#4752C4;
+
+}
+
+.reset{
+
+background:#31384d;
+color:white;
+
+}
+
+.reset:hover{
+
+background:#414960;
+
+}
+
+.footer{
+
+margin-top:40px;
+display:flex;
+justify-content:flex-end;
+
+}
+
+.save-all{
+
+padding:15px 32px;
+background:#5865F2;
+border:none;
+border-radius:12px;
+font-size:16px;
+font-weight:600;
+color:white;
+cursor:pointer;
+
+}
+
+.save-all:hover{
+
+background:#4752C4;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="sidebar">
+
+<div class="logo">
+
+DA-X
 
 </div>
 
-</div>
+<div class="nav">
 
-<form method="POST">
-
-<div class="grid">
-
-    {% for rule_name, display_name in [
-        ("bad_words", "Bad Words Filter"),
-        ("spam", "Spam Protection"),
-        ("invite_links", "Invite Link Filter"),
-        ("caps_spam", "Caps Spam Filter"),
-        ("mass_mentions", "Mass Mention Filter")
-    ] %}
-
-    {% set rule = rules.get(rule_name) %}
-
-    <div class="card">
-
-        <h3>
-            {{ display_name }}
-        </h3>
-
-        <br>
-
-        <label>
-
-            <input
-                type="checkbox"
-                name="{{ rule_name }}_enabled"
-                {% if rule and rule.enabled %}checked{% endif %}
-            >
-
-            Enabled
-
-        </label>
-
-        <br><br>
-
-        <label>
-            Configuration
-        </label>
-
-        <textarea
-            name="{{ rule_name }}_config"
-            rows="4"
-            placeholder="Optional configuration..."
-        >{{ rule.config if rule else '' }}</textarea>
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-<br>
-
-<button
-    type="submit"
-    class="btn"
->
-    Save Automod Settings
-</button>
-
-</form>
-
-<br>
-
-<a
-href="/guild/{{ guild_id }}"
-class="btn"
-
->
-
-← Back
-
+<a href="/dashboard">
+🏠 Dashboard
 </a>
 
-{% endblock %}
+<a class="active">
+🛡 Auto Moderation
+</a>
+
+<a href="#">
+📜 Logs
+</a>
+
+<a href="#">
+⚙ Settings
+</a>
+
+<a href="/logout">
+🚪 Logout
+</a>
+
+</div>
+
+</div>
+
+<div class="content">
+
+<h1 class="page-title">
+
+Auto Moderation
+
+</h1>
+
+<p class="subtitle">
+
+Configure your moderation rules with ease.
+
+</p>
+
+<div class="card">
+
+<h2>🛡 Bad Words Filter</h2>
+
+<div class="setting">
+<label>Enabled</label>
+
+<label class="switch">
+<input type="checkbox" checked>
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="setting">
+<label>Action</label>
+
+<select>
+<option>Delete Message</option>
+<option>Warn User</option>
+<option>Timeout User</option>
+<option>Kick User</option>
+<option>Ban User</option>
+</select>
+</div>
+
+<div class="setting">
+<label>Word List</label>
+
+<button class="btn reset">
+Manage Words
+</button>
+</div>
+
+<div class="buttons">
+<button class="btn save">Save</button>
+<button class="btn reset">Reset</button>
+</div>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>🚫 Spam Protection</h2>
+
+<div class="setting">
+<label>Enabled</label>
+
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="setting">
+<label>Messages Allowed</label>
+
+<input type="number" value="5">
+</div>
+
+<div class="setting">
+<label>Time Window</label>
+
+<select>
+<option>5 Seconds</option>
+<option selected>10 Seconds</option>
+<option>15 Seconds</option>
+<option>30 Seconds</option>
+<option>60 Seconds</option>
+</select>
+
+</div>
+
+<div class="setting">
+<label>Punishment</label>
+
+<select>
+<option>Delete Messages</option>
+<option>Warn User</option>
+<option selected>Timeout User</option>
+<option>Kick User</option>
+</select>
+
+</div>
+
+<div class="buttons">
+<button class="btn save">Save</button>
+<button class="btn reset">Reset</button>
+</div>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>🔗 Invite Filter</h2>
+
+<div class="setting">
+<label>Enabled</label>
+
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+
+</div>
+
+<div class="setting">
+<label>Mode</label>
+
+<select>
+<option>Block Every Invite</option>
+<option selected>Only External Invites</option>
+</select>
+
+</div>
+
+<div class="setting">
+<label>Whitelist Channel</label>
+
+<select>
+
+<option>None</option>
+<option>#partnerships</option>
+<option>#advertising</option>
+
+</select>
+
+</div>
+
+<div class="setting">
+
+<label>Punishment</label>
+
+<select>
+
+<option>Delete Message</option>
+<option>Warn User</option>
+<option>Timeout User</option>
+
+</select>
+
+</div>
+
+<div class="buttons">
+<button class="btn save">Save</button>
+<button class="btn reset">Reset</button>
+</div>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>🔠 Caps Filter</h2>
+
+<div class="setting">
+
+<label>Enabled</label>
+
+<label class="switch">
+
+<input type="checkbox">
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+<div class="setting">
+
+<label>Maximum Caps (%)</label>
+
+<input type="number" value="70">
+
+</div>
+
+<div class="setting">
+
+<label>Minimum Characters</label>
+
+<input type="number" value="10">
+
+</div>
+
+<div class="setting">
+
+<label>Punishment</label>
+
+<select>
+
+<option>Warn User</option>
+<option selected>Delete Message</option>
+<option>Timeout User</option>
+
+</select>
+
+</div>
+
+<div class="buttons">
+<button class="btn save">Save</button>
+<button class="btn reset">Reset</button>
+</div>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>📢 Mass Mention Protection</h2>
+
+<div class="setting">
+
+<label>Enabled</label>
+
+<label class="switch">
+
+<input type="checkbox">
+
+<span class="slider"></span>
+
+</label>
+
+</div>
+
+<div class="setting">
+
+<label>Maximum Mentions</label>
+
+<input type="number" value="5">
+
+</div>
+
+<div class="setting">
+
+<label>Punishment</label>
+
+<select>
+
+<option>Delete Message</option>
+<option>Warn User</option>
+<option selected>Timeout User</option>
+<option>Kick User</option>
+
+</select>
+
+</div>
+
+<div class="buttons">
+
+<button class="btn save">
+Save
+</button>
+
+<button class="btn reset">
+Reset
+</button>
+
+</div>
+
+</div>
